@@ -1,0 +1,36 @@
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\bin\Debug\WFA ImgEdit.exe.config
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\bin\Debug\WFA ImgEdit.exe
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\bin\Debug\WFA ImgEdit.pdb
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csprojAssemblyReference.cache
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.form_main.resources
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.Properties.Resources.resources
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csproj.GenerateResource.cache
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csproj.CoreCompileInputs.cache
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.exe
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.pdb
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.ImageOptions.resources
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.Rename_Preset.resources
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\bin\Debug\Microsoft.WindowsAPICodePack.dll
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\bin\Debug\Microsoft.WindowsAPICodePack.xml
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csproj.CopyComplete
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.languageSelect.resources
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\bin\Debug\ImageEditCore.dll
+C:\Users\HartunRo\source\repos\WFA ImgEdit\WFA ImgEdit\bin\Debug\ImageEditCore.pdb
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\bin\Debug\WFA ImgEdit.exe.config
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\bin\Debug\WFA ImgEdit.exe
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\bin\Debug\WFA ImgEdit.pdb
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\bin\Debug\ImageEditCore.dll
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\bin\Debug\Microsoft.WindowsAPICodePack.dll
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\bin\Debug\ImageEditCore.pdb
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\bin\Debug\Microsoft.WindowsAPICodePack.xml
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csprojAssemblyReference.cache
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.languageSelect.resources
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.ImageOptions.resources
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.form_main.resources
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.Properties.Resources.resources
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA_ImgEdit.Rename_Preset.resources
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csproj.GenerateResource.cache
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csproj.CoreCompileInputs.cache
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.csproj.CopyComplete
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.exe
+C:\Users\HartunRo\source\repos\ImgEdit\WFA ImgEdit\obj\Debug\WFA ImgEdit.pdb

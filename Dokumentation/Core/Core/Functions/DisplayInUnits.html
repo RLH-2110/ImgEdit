@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>DisplayInUnits (Core.cs - Core)</title>
+</head>
+<body>
+	<a href="./../../../index.html">Back to Index</a><br/>
+	<a href="./../../index_core.html">Back to Core.cs Index</a><br/>
+	<a href="./../index_core.html">Back to Core Index</a><br/>
+	<br/>
+	<br/>
+
+    
+	<h1>Overview</h1>
+	This function converts bytes into the best unit (Bytes, KiB, MiB, GiB), it can also be configured to output values in (Bytes, KB,MB,GB)<br>
+	
+	<h1>Definition</h1>
+	<code>public static DisplayInUnits_return DisplayInUnits(decimal value, bool kilo)</code><br>
+	This function takes in a decimal, which is the number that we want to get the corret unit for. (I belive its a decimal, because NumericUpAndDown uses decimals)<br>
+	the bool indicates if we use the 1000th based units. false = based on 1024; true = based on 1000<br>
+	<br>
+	The return is a <a href="./../Structs/DisplayInUnits_return.html">DisplayInUnits_return</a> where it stores both the number (mostly between 0 to 999) and the string for the unit, like "KiB"<br>
+	Maybe just a string would also do the job, but thats not relevant anymore.
+	
+	<h1>Behaviour</h1>
+	we set up an index to 0 and then set up a bool to see if the decimal value is negative<br>
+	if it is negtative we make the number positive.<br>
+	then we set up the divider. Normally it is 1024, but if the 'kilo' bool is set, then we use 1000<br>
+	<br>
+	Then we incement the index as long as the value is over 999, however if the index is bigger than the array of string, then we recude the index and break. then, if we did not break, we set the value to the value divided by the divider.<br>
+	<br>
+	If the number started as a negtive number, we make it negative again. then we generate the <a href="./../Structs/DisplayInUnits_return.html">DisplayInUnits_return</a> and return it.<br>
+	Note: in the code you will see <code>Sizes[<a href="./boolAsIndex.html">boolAsIndex</a>(kilo), i]</code>, this is an 2d array holding the unit names, the first dimension is if we use KiB or KB, and we use a boolen as index<br>
+	<br>
+	
+	<pre>
+<i>relevant functions:</i>
+	<a href="./boolAsIndex.html">boolAsIndex (Core.cs - Core)</a>
+
+<i>relevant stuctures:</i>
+	<a href="./../Structs/DisplayInUnits_return.html">DisplayInUnits_return (Core.cs - Core)</a>
+	
+<i>used by:</i>
+
+	</pre>	
+	
+</body>
+</html>

@@ -1,0 +1,17 @@
+C:\Users\HartunRo\source\repos\WFA ImgEdit\testus\bin\Debug\testus.exe.config
+C:\Users\HartunRo\source\repos\WFA ImgEdit\testus\bin\Debug\testus.exe
+C:\Users\HartunRo\source\repos\WFA ImgEdit\testus\bin\Debug\testus.pdb
+C:\Users\HartunRo\source\repos\WFA ImgEdit\testus\obj\Debug\testus.csprojAssemblyReference.cache
+C:\Users\HartunRo\source\repos\WFA ImgEdit\testus\obj\Debug\testus.csproj.CoreCompileInputs.cache
+C:\Users\HartunRo\source\repos\WFA ImgEdit\testus\obj\Debug\testus.exe
+C:\Users\HartunRo\source\repos\WFA ImgEdit\testus\obj\Debug\testus.pdb
+C:\Users\HartunRo\source\repos\ImgEdit\testus\bin\Debug\testus.exe.config
+C:\Users\HartunRo\source\repos\ImgEdit\testus\bin\Debug\testus.exe
+C:\Users\HartunRo\source\repos\ImgEdit\testus\bin\Debug\testus.pdb
+C:\Users\HartunRo\source\repos\ImgEdit\testus\bin\Debug\ImageEditCore.dll
+C:\Users\HartunRo\source\repos\ImgEdit\testus\bin\Debug\ImageEditCore.pdb
+C:\Users\HartunRo\source\repos\ImgEdit\testus\obj\Debug\testus.csproj.CoreCompileInputs.cache
+C:\Users\HartunRo\source\repos\ImgEdit\testus\obj\Debug\testus.csproj.CopyComplete
+C:\Users\HartunRo\source\repos\ImgEdit\testus\obj\Debug\testus.exe
+C:\Users\HartunRo\source\repos\ImgEdit\testus\obj\Debug\testus.pdb
+C:\Users\HartunRo\source\repos\ImgEdit\testus\obj\Debug\testus.csproj.AssemblyReference.cache

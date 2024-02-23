@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartArguments>-o test.img -i C:\Users\HartunRo\Desktop\tests\files\189.5.txt C:\Users\HartunRo\Desktop\tests\files\190-5kb.txt C:\Users\HartunRo\Desktop\tests\files\189.5.txt C:\Users\HartunRo\Desktop\tests\files\190kb.txt C:\Users\HartunRo\Desktop\tests\files\189.5.txt C:\Users\HartunRo\Desktop\tests\files\bigus test.txt C:\Users\HartunRo\Desktop\tests\files\helw.txt C:\Users\HartunRo\Desktop\tests\files\lorum.txt C:\Users\HartunRo\Desktop\tests\files\TEST.TXT C:\Users\HartunRo\Desktop\tests\btest\testa.rtf C:\Users\HartunRo\Desktop\tests\btest\testu.txt C:\Users\HartunRo\Desktop\tests\files\small C:\Users\HartunRo\Desktop\tests\huluhu\tesa.txt C:\Users\HartunRo\Desktop\tests\huluhu\tesb.txt C:\Users\HartunRo\Desktop\tests\huluhu\tesc.txt "C:\Users\HartunRo\Desktop\tests\files\tests\html\Hypertext Markup Language – Wikipedia-Dateien" -c -w</StartArguments>
+  </PropertyGroup>
+</Project>

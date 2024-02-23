@@ -1,0 +1,21 @@
+--- NOW ---
+
+!!!!!ADD DOKUMENTATION!!!!!! (maybe via html files on local pc?)
+
+--- ----
+
+add config option to point to another preset folder
+
+
+add option menue for the other options in the cfg file
+
+add Command line parameters for selecting the media preset, createing one, or putting the preset in the console
+
+add command line parameters to overwrite configuration stuff without changeing the congiguration file
+
+--- FUTURE ---
+
+
+add adding element into a treeviewer folder (example: le deh is added into the treeviewer, but I want to add kaka.txt into deh)
+
+Add Command line parameters for editing an image file

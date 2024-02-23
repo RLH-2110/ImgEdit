@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.2092
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFA ImgEdit", "WFA ImgEdit\WFA ImgEdit.csproj", "{1D2EB1F9-74D9-4285-ABAA-C153A2636A42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "imgEdit", "imgEdit\imgEdit.csproj", "{043FC525-F4A0-4976-A3D8-CD02C3766471}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testus", "testus\testus.csproj", "{8D3E7A21-C06E-4588-BB0D-524281607D29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageEditCore", "ImageEditCore\ImageEditCore.csproj", "{FB48BA54-3FD4-4112-AAD3-881E18E52252}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D2EB1F9-74D9-4285-ABAA-C153A2636A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D2EB1F9-74D9-4285-ABAA-C153A2636A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D2EB1F9-74D9-4285-ABAA-C153A2636A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D2EB1F9-74D9-4285-ABAA-C153A2636A42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{043FC525-F4A0-4976-A3D8-CD02C3766471}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{043FC525-F4A0-4976-A3D8-CD02C3766471}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{043FC525-F4A0-4976-A3D8-CD02C3766471}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{043FC525-F4A0-4976-A3D8-CD02C3766471}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D3E7A21-C06E-4588-BB0D-524281607D29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D3E7A21-C06E-4588-BB0D-524281607D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D3E7A21-C06E-4588-BB0D-524281607D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D3E7A21-C06E-4588-BB0D-524281607D29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB48BA54-3FD4-4112-AAD3-881E18E52252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB48BA54-3FD4-4112-AAD3-881E18E52252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB48BA54-3FD4-4112-AAD3-881E18E52252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB48BA54-3FD4-4112-AAD3-881E18E52252}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4058C3BC-A56F-435B-9966-3CB31511DB3B}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Preset CFG File Format</title>
+</head>
+<body>
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+
+
+
+	<a href="./../../index.html">Back to Index</a><br/>
+	<a href="./../index_fileformats.html">Back to File Formats Index</a><br/>
+	<br/>
+	<br/>
+	
+	<h1>Overview</h1>
+	The preset CFG file saves Presets for the Image format, like Sides, Heads, mediaDescriptor, ...<br/>
+	It also saves meta information about the Preset, like the preset name.
+	
+	<h1>Format</h1>
+	<div>
+		<h2>Format Version 1.0</h2>
+
+		<b>imporant:</b><br/>
+		The first byte is refered to as byte 0<br/>
+		Byte adressed and values in this dokumentation are written in Hexadecimal!<br/>
+		All data is saved in little endian!<br/>
+		The progamm checks if the preset file is at least 0xB bytes long, the preset file can not be smaller than 0xB bytes!
+		<br/>
+		<br/>
+		
+		<table class="tg">
+			<thead>
+			  <tr>
+				<th class="tg-fymr">Data<br></th>
+				<th class="tg-fymr">Offset<br></th>
+				<th class="tg-fymr">Length</th>
+			  </tr>
+			</thead>
+			<tbody>
+			  <tr>
+				<td class="tg-0pky">Mayor Version</td>
+				<td class="tg-0pky">0x0</td>
+				<td class="tg-0pky">0x1</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Minor Version</td>
+				<td class="tg-0pky">0x1</td>
+				<td class="tg-0pky">0x1</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Bytes per sector</td>
+				<td class="tg-0pky">0x2</td>
+				<td class="tg-0pky">0x2</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Tracks per side</td>
+				<td class="tg-0pky">0x4</td>
+				<td class="tg-0pky">0x2</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Sectors per track</td>
+				<td class="tg-0pky">0x6</td>
+				<td class="tg-0pky">0x1</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Sides</td>
+				<td class="tg-0pky">0x7</td>
+				<td class="tg-0pky">0x1</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Media descriptor</td>
+				<td class="tg-0pky">0x8</td>
+				<td class="tg-0pky">0x1</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Preset name length</td>
+				<td class="tg-0pky">0x9</td>
+				<td class="tg-0pky">0x1</td>
+			  </tr>
+			  <tr>
+				<td class="tg-0pky">Preset name</td>
+				<td class="tg-0pky">0xA<br></td>
+				<td class="tg-0pky">Variable<br></td>
+			  </tr>
+			</tbody>
+		</table>
+		
+		
+		<b>Version number</b></br>
+		The first two bytes are the version. the first byte is the mayor version, the second byte is the minor version.<br>
+		higer minor versions can be read by lower minor versions, but higher mayor versions can not be read my lower mayor versions.<br>
+		<br/>
+		<b>Bytes per sector</b></br>
+		byte 0x2 and 0x3 are to store the bytesPerSector of the media<br/>
+		<br/>
+		<b>Tracks per side</b></br>
+		byte 0x4 and 0x5 are to store the tracksPerSide of the media<br/>
+		<br/>
+		<b>Sectors per track</b></br>
+		byte 0x6 stores the sectorsPerTrack of the media<br/>
+		<br/>
+		<b>Sides</b></br>
+		byte 0x7 stores the amount of sides of the media<br/>
+		<br/>
+		<b>Media descriptor</b></br>
+		byte 0x8 stores the mediaDescriptor of the media<br/>
+		<br/>
+		<b>Preset name length</b></br>
+		byte 0x9 stores the length of the preset name, it must be a value between 1 and FF<br/>
+		<br/>
+		<b>Preset name</b></br>
+		The Preset name starts at byte 0xA and its length is determined by byte 0x9 (Preset name length). It has a minimum size of 0x1, and a maximum size of 0xFF<br/>
+		<br/>
+		<br/>
+		Data after the Preset name will be ignroed.<br/>
+		<br/>
+		<br/>
+		<br/>
+		
+		<pre>
+<i>relevant functions:</i>
+	<a href="./../../Core/Core/Functions/loadPresets.html">loadPresets (Core.cs - Core)</a>
+	<a href="./../../Core/Core/Functions/readMediaFromFile.html">readMediaFromFile (Core.cs - Core)</a>
+		</pre>
+		
+
+	</div>
+</body>
+</html>

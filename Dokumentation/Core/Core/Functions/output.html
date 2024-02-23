@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Output (Core.cs - Core)</title>
+</head>
+<body>
+	<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+
+
+	<a href="./../../../index.html">Back to Index</a><br/>
+	<a href="./../../index_core.html">Back to Core.cs Index</a><br/>
+	<a href="./../index_core.html">Back to Core Index</a><br/>
+	<br/>
+	<br/>
+
+    
+	<h1>Overview</h1>
+	The output function allows the caller to use the same function for user output, the only difference on the caller side between window output and console output is a bool given to this function.<br>
+	This function is very important in the Core, less so outside the core, it is used outside the core.<br>
+	Input is also handled in a limited capacity, like with a try-abort dialoge, which are also implemented in console form, just in the form of console text and an input routine.<br>
+	
+	<h1>Definition</h1>
+	<code>public static DialogResult output(string text, string title, MessageBoxButtons btns,MessageBoxIcon icon, bool console)</code><br>
+	<br>
+	The function takes 5 parameters:<br>
+	<table class="tg">
+	<thead>
+	  <tr>
+		<th class="tg-0pky"><b><span style="font-style:italic">Parameter</span></b></th>
+		<th class="tg-0pky"><b>Explenation</b></th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+		<td class="tg-0pky">string Text</td>
+		<td class="tg-0pky">This is the Text that will be shown to the user</td>
+	  </tr>
+	  <tr>
+		<td class="tg-0pky">string Title</td>
+		<td class="tg-0pky">This is the title of the MessageBox (only on Window version)</td>
+	  </tr>
+	  <tr>
+		<td class="tg-0pky">MessageBoxButtons btns</td>
+		<td class="tg-0pky">these are the input options, they will be directly used in the window version, and "emulated" in the console version.</td>
+	  </tr>
+	  <tr>
+		<td class="tg-0pky">MessageBoxIcon icon</td>
+		<td class="tg-0pky">The MessageBox icon (only on Window version)</td>
+	  </tr>
+	  <tr>
+		<td class="tg-0lax">bool console</td>
+		<td class="tg-0lax">This indicates if we are using the console version (true = console, false = window)<br></td>
+	  </tr>
+	</tbody>
+	</table>
+
+	<h1>Behaviour</h1>
+	This function first checks if the console bool is true, if it is not true, then we just return and create a window with the parameters: <code>return MessageBox.Show(text, title, btns, icon);</code><br>
+	If console is true, we output the text: <code>Console.WriteLine(text);</code><br>
+	<br>
+	After that, we start the "window emulation". a temp variable for an user input is created. and we enter a switch block.<br>
+	Each case is divided into two sections (except the MessageBoxButtons.OK casse, since we can just return  DialogResult.OK there):<br>
+	<br>
+	The first part reads a key and saves it in the temporary variable, it repeats this untill it is a key the user is allowed to press (usually the first letter of the name of the buttion)<br> 
+	The second part is another switch, this goes over all the valid inputs and returns the coreponding DialogResult.<br>
+	<br>
+	here is an example:
+<pre><code>
+case MessageBoxButtons.YesNoCancel:
+    Console.Write(<a href="./getString.html">getString</a>("yesnocancel"));
+    do
+    {
+        key = Console.ReadKey();
+    } while (key.Key != ConsoleKey.Y && key.Key != ConsoleKey.N && key.Key != ConsoleKey.C);
+
+    Console.Write("\n");
+    switch (key.Key)
+    {
+        case ConsoleKey.Y: return DialogResult.Yes;
+        case ConsoleKey.N: return DialogResult.No;
+        case ConsoleKey.C: return DialogResult.Cancel;
+        default: return DialogResult.Cancel;
+    }
+</code></pre><br>
+	
+	<br>
+	<pre>
+<i>relevant functions:</i>
+	<a href="./getString.html">getString (Core.cs - Core)</a>
+
+<i>used by:</i>
+	A lot
+	TODO
+	</pre>	
+	
+</body>
+</html>

@@ -1,1 +1,1 @@
-wcl *.c -0 -fe=imgEdit.exe
+wcl -DOS_DOS *.c -0 -fe=imgEdit.exe 

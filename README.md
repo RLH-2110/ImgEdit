@@ -1,7 +1,10 @@
 > [!NOTE]
-> I will attemt to port this project to C It will also be ported to linux and I will try to make sure it will still run on windows.
+> This progamm is currently being rewritten in C, you can see the old C# version in the Depricated folder.
 
-# This readme is not done
-the same goes for the dokumentation and the progamm.
+> [!WARNING]
+> This readme is not compleate
 
-I will need time to document everthing then I need to work on a lot more featues and bugs.
+
+When the rewrite is done, it will be able to create floppy disk images with FAT 12.
+
+My goal is to make this compatible with Linux, Windows NT+, MS-DOS and Haik

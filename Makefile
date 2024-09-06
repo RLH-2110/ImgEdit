@@ -4,4 +4,4 @@ CFILES= *.c
 CHEADERS = *.h
 
 make: $(CFILES) $(CHEADERS)
-	$(CC) -o imgEdit $(CFILES) 
+	$(CC) -std=c90 -o imgEdit $(CFILES) 

@@ -17,3 +17,4 @@ extern char* outputFile;
 void appendArg(char *arg, char ***list, int *listC);
 
 #endif
+

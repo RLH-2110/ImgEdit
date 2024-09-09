@@ -2,7 +2,7 @@
 CC=gcc
 CFILES= *.c
 CHEADERS = *.h
-CCFLAGS = 
+CCFLAGS = -pedantic 
 
 
 

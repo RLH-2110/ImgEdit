@@ -6,6 +6,52 @@
 void print_help(char* argv0); /* prints help screen */
 void fetch_flagArgs(int argc, char*argv[], int firstIndex); /* counts how many parameters there are after a flag */
 
+
+/* arg = pointer to the raw text of the argument, THIS POINER MUST STAY ALIVE FOR THE ENTIRE RUNTIME!
+   list = a pointer to a char** like inputFiles
+   listC = pointer to the count of how many elements are in the list */
+void appendArg(char *arg, char ***list, int *listC){
+	int i;
+
+	if (!arg || !list){ /* if one param is NULL */
+		puts("ERROR: appendArg does not take NULL!");
+		exit(1);
+	} 
+
+
+
+	if (*list == NULL){
+
+		*list = malloc(sizeof(char*));
+		if (*list == NULL){
+			puts("ERROR: appendArg is out of memory!");
+			exit(1);
+		}
+
+		*listC = 1;
+		*list[0] = arg; /* set the first element in the list to the argument pointer */	
+	}else{
+		*listC = *listC + 1;
+
+		*list = realloc(*list,*listC * sizeof(char*)); /* make space for one more pointer */
+
+
+		if (*list == NULL){
+			puts("ERROR: appendArg is out of memory (realloc)!");
+			exit(1);
+		}
+
+
+		(*list)[*listC - 1] = arg; /* set the last element to the argument pointer */
+
+
+
+	}
+
+}
+
+
+
 void getArgs(int argc, char*argv[]){
 	
 	int argI = 1; /* argument index, starts at first argument, ignores filename */

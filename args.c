@@ -9,6 +9,8 @@ void fetch_flagArgs(int argc, char*argv[], int firstIndex); /* counts how many p
 void getArgs(int argc, char*argv[]){
 	
 	int argI = 1; /* argument index, starts at first argument, ignores filename */
+	int i;
+	int result;
 
 	for (;argI + 1 <= argc; argI++){ /* argc is a count, argI is an index thats why we need to increment argI */
 
@@ -35,7 +37,7 @@ void getArgs(int argc, char*argv[]){
 
 				argumentFlags += flags_i;
 
-				int result = fetch_flagArgsCount(argc,argv,argI+1);
+				result; result = fetch_flagArgsCount(argc,argv,argI+1);
 
 				if (result < 1){
 					puts("Error: flag -i needs at least one argument!");
@@ -43,8 +45,7 @@ void getArgs(int argc, char*argv[]){
 					exit(1);
 				}
 
-				int i = 1;
-				for (;i <= result; i++){ /* starts at 1, becuase argI + 0 == -i */
+				for (i = 1;i <= result; i++){ /* starts at 1, becuase argI + 0 == -i */
 					appendArg(argv[argI + i],&inputFiles,&inputFilesC);
 				}
 				break;
@@ -66,12 +67,16 @@ void getArgs(int argc, char*argv[]){
 
 /* counts how many parameters there are after a flag */
 int fetch_flagArgsCount(int argc, char*argv[], int firstIndex){
-	if (firstIndex >= argc)
+	
+	int paramCount = 0;
+	int i = firstIndex;
+
+
+	if (firstIndex >= argc)	
 		return 0;
 	
 
-	int paramCount = 0;
-	int i = firstIndex;
+
 
 	for (;i < argc && argv[i][0] != '-';i++)
 		paramCount++;

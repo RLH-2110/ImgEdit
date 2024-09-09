@@ -90,3 +90,5 @@ void print_help(char* argv0){
 	puts("  -i <inputs>: <inputs> specifies the input files, can be one or multiple");
 	puts("  -h: shows this help screen");
 }
+
+

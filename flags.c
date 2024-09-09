@@ -53,3 +53,4 @@ void appendArg(char *arg, char ***list, int *listC){
 		/* *list[*listC - 1] = arg; /* set the last element to the argument pointer */
 	}
 }
+

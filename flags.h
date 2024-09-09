@@ -1,12 +1,10 @@
 #ifndef flagsH
 #define flagsH
 
-#include <stdint.h>
-
 /* This file handles the command line flags */
 
 
-extern uint16_t argumentFlags; /* the flags that are set with the command line! */
+extern short argumentFlags; /* the flags that are set with the command line! */
 
 extern char** inputFiles;
 extern int inputFilesC; /* list of how many filenames there are in inputFiles */

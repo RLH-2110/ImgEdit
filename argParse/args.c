@@ -3,9 +3,9 @@
 #include "../defines.h"
 #include "flags.h"
 
-void print_help(char* argv0); /* prints help screen */
-void fetch_flagArgs(int argc, char*argv[], int firstIndex); /* counts how many parameters there are after a flag */
 
+int fetch_flag_arg_count(int argc, char*argv[], int firstIndex); /* counts how many parameters there are after a flag */
+void print_help(char* argv0); /* prints help screen */
 
 /* arg = pointer to the raw text of the argument, THIS POINER MUST STAY ALIVE FOR THE ENTIRE RUNTIME!
    list = a pointer to a char** like inputFiles
@@ -70,7 +70,7 @@ void get_args(int argc, char*argv[]){
 
 				argumentFlags += flags_o;
 
-				if (fetch_flagArgsCount(argc,argv,argI+1) != 1){
+				if (fetch_flag_arg_count(argc,argv,argI+1) != 1){
 					puts("Error: flag -o only takes one argument!");
 					print_help(argv[0]);
 					exit(1);
@@ -83,7 +83,7 @@ void get_args(int argc, char*argv[]){
 
 				argumentFlags += flags_i;
 
-				result; result = fetch_flagArgsCount(argc,argv,argI+1);
+				result; result = fetch_flag_arg_count(argc,argv,argI+1);
 
 				if (result < 1){
 					puts("Error: flag -i needs at least one argument!");
@@ -112,7 +112,7 @@ void get_args(int argc, char*argv[]){
 }
 
 /* counts how many parameters there are after a flag */
-int fetch_flagArgsCount(int argc, char*argv[], int firstIndex){
+int fetch_flag_arg_count(int argc, char*argv[], int firstIndex){
 	
 	int paramCount = 0;
 	int i = firstIndex;

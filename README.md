@@ -13,5 +13,5 @@ Here is what you need to do to compile the source for the different operating sy
 Linux and Haiku, Make and GCC are usually preinstalled, on Windows you have to install them yourself or compile them manually with your down compiler. At a later date, I will provide links to everything.
 <table><thead><tr><th>Compiling</th><th>Requirements</th><th>Command</th><th>Versions Tested</th></tr></thead><tbody><tr><td>Linux</td><td>GCC, Make</td><td>make</td><td>Ubuntu 22.04.4 LTS</td></tr><tr><td>Windows<br></td><td>GCC, Make<br></td><td>make<br></td><td>Windows 10 22h2</td></tr><tr><td>DOS</td><td><a href="https://github.com/open-watcom/open-watcom-v2">Open Watcom</a></td><td>COMPDOS</td><td>6.22</td></tr><tr><td>Haiku</td><td>GCC, Make</td><td>make</td><td>R1/Beta4(hrev56578+59)</td></tr></tbody></table>
 
-Make for Windows https://gnuwin32.sourceforge.net/packages/make.htm
+Make for Windows https://gnuwin32.sourceforge.net/packages/make.htm  
 GCC for Windows https://www.mingw-w64.org/

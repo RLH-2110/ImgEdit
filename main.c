@@ -11,7 +11,7 @@ int main(int argc, char* argv[]){
 
 	printf("%s version %s %s\n",argv[0],version,OS_STRING);
 
-	getArgs(argc, argv);
+	get_args(argc, argv);
 
 	printf("(debug) argument flag variable (hex): %x\n",argumentFlags);
 

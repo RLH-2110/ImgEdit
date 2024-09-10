@@ -10,11 +10,11 @@ void fetch_flagArgs(int argc, char*argv[], int firstIndex); /* counts how many p
 /* arg = pointer to the raw text of the argument, THIS POINER MUST STAY ALIVE FOR THE ENTIRE RUNTIME!
    list = a pointer to a char** like inputFiles
    listC = pointer to the count of how many elements are in the list */
-void appendArg(char *arg, char ***list, int *listC){
+void append_arg(char *arg, char ***list, int *listC){
 	int i;
 
 	if (!arg || !list){ /* if one param is NULL */
-		puts("ERROR: appendArg does not take NULL!");
+		puts("ERROR: append_arg does not take NULL!");
 		exit(1);
 	} 
 
@@ -24,7 +24,7 @@ void appendArg(char *arg, char ***list, int *listC){
 
 		*list = malloc(sizeof(char*));
 		if (*list == NULL){
-			puts("ERROR: appendArg is out of memory!");
+			puts("ERROR: append_arg is out of memory!");
 			exit(1);
 		}
 
@@ -37,7 +37,7 @@ void appendArg(char *arg, char ***list, int *listC){
 
 
 		if (*list == NULL){
-			puts("ERROR: appendArg is out of memory (realloc)!");
+			puts("ERROR: append_arg is out of memory (realloc)!");
 			exit(1);
 		}
 
@@ -52,7 +52,7 @@ void appendArg(char *arg, char ***list, int *listC){
 
 
 
-void getArgs(int argc, char*argv[]){
+void get_args(int argc, char*argv[]){
 	
 	int argI = 1; /* argument index, starts at first argument, ignores filename */
 	int i;
@@ -92,7 +92,7 @@ void getArgs(int argc, char*argv[]){
 				}
 
 				for (i = 1;i <= result; i++){ /* starts at 1, becuase argI + 0 == -i */
-					appendArg(argv[argI + i],&inputFiles,&inputFilesC);
+					append_arg(argv[argI + i],&inputFiles,&inputFilesC);
 				}
 				break;
 

@@ -60,7 +60,7 @@ void getArgs(int argc, char*argv[]){
 
 	for (;argI + 1 <= argc; argI++){ /* argc is a count, argI is an index thats why we need to increment argI */
 
-		if (argv[argI][0] != '-')
+		if (argv[argI][0] != '-') /* ignore if its not a flag */
 			continue;
 
 		switch (argv[argI][1]){

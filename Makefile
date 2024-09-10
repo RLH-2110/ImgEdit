@@ -3,7 +3,7 @@ CC=gcc
 CFILES= *.c argParse/*.c
 CHEADERS = *.h argParse/*.h
 CCFLAGS = -pedantic 
-
+OUTPUT = imgEdit
 
 
 ifeq ($(OS),Windows_NT)
@@ -26,4 +26,14 @@ endif
 
 
 make: $(CFILES) $(CHEADERS)
-	$(CC) -ansi -o imgEdit $(CFILES) $(CCFLAGS) 
+	$(CC) -ansi -o $(OUTPUT) $(CFILES) $(CCFLAGS) 
+
+
+.PHONY : clean
+clean:
+	
+ifeq ($(OS),Windows_NT)
+	rm $(OUTPUT).exe
+else
+	rm $(OUTPUT)
+endif

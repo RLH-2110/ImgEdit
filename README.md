@@ -1,5 +1,5 @@
 > [!NOTE]
-> This progamm is currently being rewritten in C, you can see the old C# version in the Depricated folder.
+> This progamm is currently being rewritten in C, you can see the old C# version in the [deprecated branch](https://github.com/RLH-2110/ImgEdit/tree/deprecated).
 
 > [!WARNING]
 > This readme is not compleate

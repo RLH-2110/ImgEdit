@@ -3,7 +3,7 @@
 
 /* This file handles the command line flags */
 
-
+/* View Defines.h section 'Flags' */
 extern short argumentFlags; /* the flags that are set with the command line! */
 
 extern char** inputFiles;

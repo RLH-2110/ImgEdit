@@ -1,7 +1,7 @@
 
 CC=gcc
-CFILES= *.c
-CHEADERS = *.h
+CFILES= *.c argParse/*.c
+CHEADERS = *.h argParse/*.h
 CCFLAGS = -pedantic 
 
 

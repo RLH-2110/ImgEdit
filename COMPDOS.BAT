@@ -1,1 +1,1 @@
-wcl -DOS_DOS *.c -0 -fe=imgEdit.exe 
+wcl -DOS_DOS *.c argParse/*.c -0 -fe=imgEdit.exe 

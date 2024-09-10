@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "stdlib.h"
-#include "defines.h"
+#include "../defines.h"
 #include "flags.h"
 
 void print_help(char* argv0); /* prints help screen */

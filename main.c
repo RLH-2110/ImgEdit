@@ -1,7 +1,7 @@
 
 #include "defines.h"
-#include "flags.h"
-#include "args.h"
+#include "argParse/flags.h"
+#include "argParse/args.h"
 #include "stdio.h"
 #include "compatibility.h"
 

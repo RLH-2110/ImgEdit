@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
-#include "defines.h"
+#include "../defines.h"
 #include "flags.h"
 #include <stdio.h>
 

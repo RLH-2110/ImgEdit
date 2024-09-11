@@ -1,38 +1,20 @@
 #include "../../compat.h"
 #ifdef OS_DOS
 
-#include <stdio.h>
 #include "../../defines.h"
-#include <errno.h>
+#include <dos.h>
 
-fsError write_file(char* filePath, char* buffer, size_t bufferSize){
-	
-	FILE *file;
-	int result;
+bool isDirectory(const char *path) {
 
-	errno = 0;
-	file = fopen(filePath,"w");
-
-	if (file == NULL){
-		printf("(debug) write_file open error. errno: %d",errno);
-		return fseNoOpen;
+	struct find_t fileinfo;
+	if (_dos_findfirst(path,_A_SUBDIR,&fileinfo) == 0){ /* return 0 = found. we searched for the path as a directory*/
+		return 1;
 	}
-
-	errno = 0;
-	if (fwrite(buffer,1,bufferSize,file) != bufferSize){
-		printf("(debug) write_file write error. errno: %d",errno);
-		return fseWrongWrite;
-	}
-
-	errno = 0;
-	if (fclose(file) != 0){
-		printf("(debug) write_file close error. errno: %d",errno);
-		return fseNoClose;
-	}
-
-	return fseNoError;
+	return 0;
 }
 
-#endif /* OS_DOS*/
+
+/* OS_DOS */
+#endif 
 
 typedef int make_iso_compiler_happy;

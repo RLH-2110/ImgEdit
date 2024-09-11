@@ -31,8 +31,12 @@ int main(int argc, char* argv[]){
 		puts(""); /* new line*/
 	}
 
+
+	/* THE CODE HERE DOES NOT FULLY WORK ON MS-DOS YET! PLEASE DEBUG!*/
 	if (outputFile && inputFiles){ /* if both are not null */
 		str = malloc(10); /* must be malloc*/
+		for(i = 0;i < 10;i++)
+			str[i] = 0;
 
 		for (i = 0;i < inputFilesC && str != NULL;i++){
 			printf("Adding %s \n",inputFiles[i]);

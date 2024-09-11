@@ -17,7 +17,7 @@ typedef short bool;
 #define flags_o 0x02 /* 0b0000_0000_0000_0010 */
 #define flags_i 0x04 /* 0b0000_0000_0000_0100 */
 
-typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite} fsError; 
+typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile} fsError; 
 
 #endif
 

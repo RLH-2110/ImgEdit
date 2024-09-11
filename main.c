@@ -6,8 +6,8 @@
 #include <stdio.h>
 
 #include "argParse/args.h"
-#include "compatibility.h"
-#include "fs.h"
+#include "compat.h"
+#include "comp/fs/fs.h"
 
 int main(int argc, char* argv[]){
 

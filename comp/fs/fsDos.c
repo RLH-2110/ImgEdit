@@ -1,5 +1,8 @@
+#include "../../compat.h"
+#ifdef OS_DOS
+
 #include <stdio.h>
-#include "defines.h"
+#include "../../defines.h"
 #include <errno.h>
 
 fsError write_file(char* filePath, char* buffer, size_t bufferSize){
@@ -30,3 +33,6 @@ fsError write_file(char* filePath, char* buffer, size_t bufferSize){
 	return fseNoError;
 }
 
+#endif /* OS_DOS*/
+
+typedef int make_iso_compiler_happy;

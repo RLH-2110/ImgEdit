@@ -1,7 +1,7 @@
 
 CC=gcc
-CFILES= *.c argParse/*.c
-CHEADERS = *.h argParse/*.h
+CFILES= *.c argParse/*.c comp/fs/*.c
+CHEADERS = *.h argParse/*.h comp/fs/*.h
 CCFLAGS = -pedantic 
 OUTPUT = imgEdit
 

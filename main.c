@@ -1,13 +1,14 @@
 
 #include "defines.h"
 #include "argParse/flags.h"
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "argParse/args.h"
 #include "compat.h"
 #include "comp/fs/fs.h"
+#include "comp/string/str.h"
 
 int main(int argc, char* argv[]){
 
@@ -40,8 +41,8 @@ int main(int argc, char* argv[]){
 
 		for (i = 0;i < inputFilesC && str != NULL;i++){
 			printf("Adding %s \n",inputFiles[i]);
-			strcat(str,inputFiles[i]);
-			strcat(str," ");
+			strcat_c(&str,inputFiles[i]);
+			strcat_c(&str," ");
 		}
 
 		if (str == NULL){

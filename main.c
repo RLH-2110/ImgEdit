@@ -52,8 +52,8 @@ int main(int argc, char* argv[]){
 
 		for (i = 0;i < inputFilesC && str != NULL;i++){
 			fprintf(logOut,"(debug) Adding %s \n",inputFiles[i]);
-			strcat_c(str,inputFiles[i]);
-			strcat_c(str," ");
+			strcat_c(&str,inputFiles[i]);
+			strcat_c(&str," ");
 		}
 
 		if (str == NULL){

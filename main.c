@@ -28,6 +28,7 @@ int main(int argc, char* argv[]){
 
 	fprintf(logOut,"%s version %sR%c %s\n",argv[0],VERSION,GRAPHICS_CHR,OS_STRING);
 
+	fprintf(logOut,"len(this is sparta !): %d\n",strlen("this is sparta ! ! !"));
 	
 
 	fprintf(logOut,"(debug) argument flag variable (hex): %x\n",argumentFlags);

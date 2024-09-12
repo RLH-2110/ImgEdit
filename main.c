@@ -10,15 +10,14 @@
 #include "comp/fs/fs.h"
 #include "comp/string/str.h"
 
-FILE *logOut;
-void setLogFile();
+#include "setup.h"
 
 
 int main(int argc, char* argv[]){
 	char* str;
 	int i;
 
-	logOut = stdout; /* log in the Terminal*/
+	setup();
 
 	get_args(argc, argv);
 
@@ -72,21 +71,3 @@ int main(int argc, char* argv[]){
 }
 
 
-void setLogFile(){
-
-	FILE *tmp;
-
-	if (create_file(logFile, &tmp) == fseNoError){
-		logOut = tmp;
-		fprintf(logOut,"set log file to: %s\n",logFile);
-	}else{
-		fprintf(logOut,"error setting log file to: %s\n",logFile);
-	}
-	
-}
-
-
-void errorExit(int status){
-	close_log_file();
-	exit(status);
-}

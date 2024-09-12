@@ -22,7 +22,7 @@ void strcat_c(char *dest, const char *src){
 	srcLen = strlen(src);
 	targetLen = destLen + srcLen + 1; /* add NULL terminator, since strlen does not include one!*/
 	
-	fprintf(logOut,"\tdestLen: %d\n\tsrcLen: %d\n\ttargetLen: %d\n\tdest: %s\n\tsrc: %s\n\ttarget: %d\n\t",destLen,srcLen,targetLen,dest,src,(dest + (destLen)) - dest);
+	fprintf(logOut,"\tdestLen: %d\n\tsrcLen: %d\n\ttargetLen: %d\n\tdest: %s\n\tsrc: %s\n\ttarget: %lu\n\t",destLen,srcLen,targetLen,dest,src,(dest + (destLen)) - dest);
 		
 	dest = realloc(dest,targetLen); /* make space for both strings */
 
@@ -34,7 +34,7 @@ void strcat_c(char *dest, const char *src){
 
 	strcpy(dest + (destLen),src); /* add src to the end of *dest (and overwerite *dest's null terminator) */
 	
-	fprintf(logOut,"now: %s\n\tstrlen: %d\n",dest,strlen(dest));
+	fprintf(logOut,"now: %s\n\tstrlen: %lu\n",dest,strlen(dest));
 }
 
 

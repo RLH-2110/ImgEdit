@@ -15,7 +15,7 @@ void append_arg(char *arg, char ***list, int *listC){
 
 	if (!arg || !list){ /* if one param is NULL */
 		fputs("ERROR: append_arg does not take NULL!\n",logOut);
-		exit(1);
+		errorExit(1);
 	} 
 
 
@@ -25,7 +25,7 @@ void append_arg(char *arg, char ***list, int *listC){
 		*list = malloc(sizeof(char*));
 		if (*list == NULL){
 			fputs("ERROR: append_arg is out of memory!\n",logOut);
-			exit(1);
+			errorExit(1);
 		}
 
 		*listC = 1;
@@ -38,7 +38,7 @@ void append_arg(char *arg, char ***list, int *listC){
 
 		if (*list == NULL){
 			fputs("ERROR: append_arg is out of memory (realloc)!\n",logOut);
-			exit(1);
+			errorExit(1);
 		}
 
 
@@ -72,7 +72,7 @@ void get_args(int argc, char*argv[]){
 				if (fetch_flag_arg_count(argc,argv,argI+1) != 1){
 					fputs("Error: flag -l takes one argument!\n",logOut);
 					print_help(argv[0]);
-					exit(1);
+					errorExit(1);
 				}
 
 				logFile = argv[argI+1];
@@ -85,7 +85,7 @@ void get_args(int argc, char*argv[]){
 				if (fetch_flag_arg_count(argc,argv,argI+1) != 1){
 					fputs("Error: flag -o takes one argument!\n",logOut);
 					print_help(argv[0]);
-					exit(1);
+					errorExit(1);
 				}
 
 				outputFile = argv[argI+1];
@@ -100,7 +100,7 @@ void get_args(int argc, char*argv[]){
 				if (result < 1){
 					fputs("Error: flag -i needs at least one argument!\n",logOut);
 					print_help(argv[0]);
-					exit(1);
+					errorExit(1);
 				}
 
 				for (i = 1;i <= result; i++){ /* starts at 1, becuase argI + 0 == -i */
@@ -117,7 +117,7 @@ void get_args(int argc, char*argv[]){
 			default:
 				printf("Error: unrecognized parameter: %s\n",argv[argI]);
 				print_help(argv[0]);
-				exit(1);
+				errorExit(1);
 				
 		}
 	}

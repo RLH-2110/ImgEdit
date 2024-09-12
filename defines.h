@@ -2,7 +2,13 @@
 #define mainH
 
 #include <stdio.h>
+
+/* /##################\ */
+/*|MAIN.C GLOBAL STUFF|*/
+/* \##################/ */
 extern FILE *logOut;
+
+void errorExit(int status);
 
 /* /###########\ */
 /*|VERSION STUFF|*/

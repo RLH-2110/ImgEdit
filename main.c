@@ -58,7 +58,7 @@ int main(int argc, char* argv[]){
 
 		if (str == NULL){
 			fputs("Main.c OUT OF MEMORY!",logOut);
-			exit(1);
+			errorExit(1);
 		}
 
 
@@ -83,4 +83,10 @@ void setLogFile(){
 		fprintf(logOut,"error setting log file to: %s\n",logFile);
 	}
 	
+}
+
+
+void errorExit(int status){
+	close_log_file();
+	exit(status);
 }

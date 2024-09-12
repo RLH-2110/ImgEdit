@@ -3,12 +3,10 @@
 
 #include <stdio.h>
 
-/* /##################\ */
+/* /#################\ */
 /*|MAIN.C GLOBAL STUFF|*/
-/* \##################/ */
-extern FILE *logOut;
-
-void errorExit(int status);
+/* \#################/ */
+#include "setup.h"
 
 /* /###########\ */
 /*|VERSION STUFF|*/

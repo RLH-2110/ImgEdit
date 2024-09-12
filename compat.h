@@ -3,6 +3,7 @@
 
 #ifdef OS_LINUX
 #define OS_STRING "LINUX"
+#define OS_POSIX
 #endif
 
 #ifdef OS_WINDOWS
@@ -15,6 +16,7 @@
 
 #ifdef OS_HAIKU
 #define OS_STRING "HAIKU"
+#define OS_POSIX
 #endif
 
 #ifndef OS_STRING

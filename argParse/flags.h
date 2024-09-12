@@ -11,5 +11,7 @@ extern int inputFilesC; /* list of how many filenames there are in inputFiles */
 
 extern char* outputFile;
 
+extern char* logFile;
+
 #endif
 

@@ -14,7 +14,7 @@ void append_arg(char *arg, char ***list, int *listC){
 	int i;
 
 	if (!arg || !list){ /* if one param is NULL */
-		puts("ERROR: append_arg does not take NULL!");
+		fputs("ERROR: append_arg does not take NULL!\n",logOut);
 		exit(1);
 	} 
 
@@ -24,7 +24,7 @@ void append_arg(char *arg, char ***list, int *listC){
 
 		*list = malloc(sizeof(char*));
 		if (*list == NULL){
-			puts("ERROR: append_arg is out of memory!");
+			fputs("ERROR: append_arg is out of memory!\n",logOut);
 			exit(1);
 		}
 
@@ -37,7 +37,7 @@ void append_arg(char *arg, char ***list, int *listC){
 
 
 		if (*list == NULL){
-			puts("ERROR: append_arg is out of memory (realloc)!");
+			fputs("ERROR: append_arg is out of memory (realloc)!\n",logOut);
 			exit(1);
 		}
 
@@ -65,13 +65,25 @@ void get_args(int argc, char*argv[]){
 
 		switch (argv[argI][1]){
 
+			case 'l':
+
+				argumentFlags += flags_l;
+
+				if (fetch_flag_arg_count(argc,argv,argI+1) != 1){
+					fputs("Error: flag -l takes one argument!\n",logOut);
+					print_help(argv[0]);
+					exit(1);
+				}
+
+				logFile = argv[argI+1];
+				break;
 
 			case 'o':
 
 				argumentFlags += flags_o;
 
 				if (fetch_flag_arg_count(argc,argv,argI+1) != 1){
-					puts("Error: flag -o only takes one argument!");
+					fputs("Error: flag -o takes one argument!\n",logOut);
 					print_help(argv[0]);
 					exit(1);
 				}
@@ -86,7 +98,7 @@ void get_args(int argc, char*argv[]){
 				result; result = fetch_flag_arg_count(argc,argv,argI+1);
 
 				if (result < 1){
-					puts("Error: flag -i needs at least one argument!");
+					fputs("Error: flag -i needs at least one argument!\n",logOut);
 					print_help(argv[0]);
 					exit(1);
 				}
@@ -135,6 +147,7 @@ void print_help(char* argv0){
 	puts("  -o <output>: <output> specifies the name of the output file");
 	puts("  -i <inputs>: <inputs> specifies the input files, can be one or multiple");
 	puts("  -h: shows this help screen");
+	puts("  -l: <logfile>: write logs into <logfile> file");
 }
 
 

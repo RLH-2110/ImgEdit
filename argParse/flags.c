@@ -14,3 +14,5 @@ int inputFilesC = 0; /* list of how many filenames there are in inputFiles */
 
 char* outputFile = NULL;
 
+char* logFile = NULL;
+

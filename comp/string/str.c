@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "../../defines.h"
 
 /* strcat does not seem to work with my DOS compiler, so I make my own.*/
@@ -13,7 +14,7 @@ void strcat_c(char **dest, const char *src){
 	int destLen, srcLen, combinedLen;
 
 	if (!dest || !src){ /* If dest or src are null*/
-		puts("ERROR: strcat_c does not take NULL!");
+		fputs("ERROR: strcat_c does not take NULL!",logOut);
 		return;
 	}
 

@@ -63,6 +63,7 @@ int main(int argc, char* argv[]){
 
 		fprintf(logOut,"(debug) writing %s in %s\n",str,outputFile);
 		write_file(outputFile,str,strlen(str));
+		free(str);
 	}
 
 

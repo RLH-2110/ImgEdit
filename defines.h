@@ -29,9 +29,17 @@ C = Custom Selection (If compiled with certain functions turned off, For example
 #endif
 
 
-/* /#####\ */
-/*|VARIOUS|*/
-/* \#####/ */
+/* /###\ */
+/*|Notes|*/
+/* \###/ */
+
+#define CALLER_FREES /* The caller frees that poinnter*/
+#define FUNCTION_FREES /* the callee frees that pointer*/
+
+
+/* /##\ */
+/*|Util|*/
+/* \##/ */
 #ifndef NULL
 #define NULL 0
 #endif
@@ -40,6 +48,17 @@ C = Custom Selection (If compiled with certain functions turned off, For example
 typedef short bool;
 #endif
 
+#ifndef true
+#define true
+#define false
+#endif
+
+
+/*/#####\*/
+/*|sizes|*/
+/*\#####/*/
+
+#define TEXT_READ_BUFF_SIZE 100 /* CANT BE SMALLER THAN 2! NOTE: this number is ment to be 1 bigger than needed! */
 
 /*/#####\*/
 /*|FLAGS|*/
@@ -52,7 +71,7 @@ typedef short bool;
 /* /#########\ */
 /*|ERROR TYPES|*/
 /* \#########/ */
-typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile} fsError; 
+typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile, fseNoRead, fseMemory} fsError; 
 
 #endif
 

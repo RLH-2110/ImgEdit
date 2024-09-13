@@ -3,6 +3,7 @@
 #include <memory.h>
 #include <string.h>
 
+#include "../comp/fs/fs.h"
 #include "../comp/string/str.h"
 #include "../compat.h"
 
@@ -19,7 +20,7 @@
 #define NULL 0
 #endif
 
-#define NUM_TESTS 2
+#define NUM_TESTS 3
 
 int failed;
 int passed;
@@ -28,6 +29,9 @@ char* sInputB;
 char* sInputC;
 char* sExpected;
 char* tmp;
+
+fsError error;
+FILE* file;
 
 void oom(){
 	puts("\nTESTER IS OUT OF MEMORY!");
@@ -94,7 +98,31 @@ int main(){
 		tmp[0] = 0;
 	}
 
-	{
+
+
+
+	{ /* TEST 1 */
+		fputs("testing file writing and reading...",stdout);
+		
+		error = fseNoError;
+		error =  write_file("out.txt", "Hello World\n12", 15);
+		if (error != fseNoError)
+			criticalTestFail();
+
+		errno = 0;
+		file = open_file("out.txt");
+		if (errno != 0)
+			criticalTestFail();
+
+		error =  close_file(FILE* file,bool log);
+
+	}
+
+
+
+
+
+	{ /* TEST 2 */
 		fputs("testing file logging...",stdout);
 		setFlags(&tmp," -l log.txt");
 

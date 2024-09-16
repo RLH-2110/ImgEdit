@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <string.h>
+#include <errno.h>
 
 #include "../comp/fs/fs.h"
-#include "../comp/string/str.h"
 #include "../compat.h"
-
+#include "tests.h"
 
 #include "../setup.h"
 
@@ -20,31 +20,33 @@
 #define NULL 0
 #endif
 
-#define NUM_TESTS 3
 
 int failed;
 int passed;
-char* sInputA;
-char* sInputB;
-char* sInputC;
-char* sExpected;
-char* tmp;
+char *sInputA;
+char *sInputB;
+char *sInputC;
+char *sExpected;
+char *tmp;
+lineRead *reader;
 
 fsError error;
 FILE* file;
 
 void oom(){
 	puts("\nTESTER IS OUT OF MEMORY!");
+	close_log_file();
 	exit(1);
 }
 
-void criticalTestFail(){
+void critical_test_fail(){
 	failed++;
-	printf("Failed!\nCritial Test failed! We cant test anything else with this failure!\nPassed: %d\nFailed: %d\n",passed,failed);
+	printf("\nTest Failed!\nCritial Test failed! We cant test anything else with this failure!\nPassed: %d\nFailed: %d\n",passed,failed);
+	close_log_file();
 	exit(1);
 }
 
-void setFlags(char **result, const char *flags){
+void set_flags(char **result, const char *flags){
 	free(*result);
 	*result = malloc(1);
 	
@@ -53,9 +55,9 @@ void setFlags(char **result, const char *flags){
 
 	*result[0] = 0;
 
-	strcat_c(result,EXECPATH);
-	strcat_c(result,flags);
-	if (!*result)
+	*result = strcat(*result,EXECPATH);
+	*result = strcat(*result,flags);
+	if (!*result) /* if null */
 		oom();
 }
 
@@ -67,54 +69,54 @@ int main(){
 	failed = 0;
 	passed = 0;
 
-	sInputA = "hallo";
-	sInputB = " Welt";
-	sInputC = "!";
-	sExpected = "hallo Welt!";
-
-	{ /* TEST 0 */
-		fputs("testing strcat_c...",stdout);
-
-		tmp = malloc(1);
-		if (!tmp)
-			oom();
-
-		tmp[0] = 0;
-
-		strcat_c(&tmp,sInputA);
-		strcat_c(&tmp,sInputB);
-		strcat_c(&tmp,sInputC);
-		
-		if (tmp == NULL)
-			criticalTestFail();
-		
-		if (strcmp(tmp,sExpected) == 0){
-			passed++;
-			puts(" passed!");
-		}
-		else
-			criticalTestFail();
-
-		tmp[0] = 0;
-	}
-
-
-
-
 	{ /* TEST 1 */
-		fputs("testing file writing and reading...",stdout);
+		fputs("testing file writing and reading... ",stdout);
 		
 		error = fseNoError;
 		error =  write_file("out.txt", "Hello World\n12", 15);
 		if (error != fseNoError)
-			criticalTestFail();
+			critical_test_fail();
+
+		if (close_file(file,false) != fseNoError)
+			critical_test_fail;
+		
 
 		errno = 0;
-		file = open_file("out.txt");
+		if (open_file("out.txt",&file) != fseNoError)
+			critical_test_fail();
 		if (errno != 0)
-			criticalTestFail();
+			critical_test_fail();
 
-		error =  close_file(FILE* file,bool log);
+
+		reader = create_lineRead(file);
+
+		/* Reads the speciefied line of a file, if it exists
+	reader: stuct that contains the FILE pointer and the currentLine (should be set to 0 and then let the function handle it)
+	line: the line you want to read (starts at 0)
+
+	returns: char pointer to the line. YOU HAVE TO FREE IT!
+
+	errnos: EINVAL, EIO, ENOMEM, ESPIPE
+*/
+		sExpected = "Hello World\n";
+		errno = 0;
+		tmp = read_line(reader,0);
+		fputs(tmp,stdout);
+		if (strcmp(tmp,sExpected) == 0){
+			puts("same string!");
+		}
+		free(tmp);
+
+		sExpected = "12";
+		errno = 0;
+		tmp = read_line(reader, 0);
+		
+		free(tmp);
+
+		if (close_file(file,false) != fseNoError)
+			critical_test_fail;
+
+		free(reader);
 
 	}
 
@@ -123,10 +125,10 @@ int main(){
 
 
 	{ /* TEST 2 */
-		fputs("testing file logging...",stdout);
-		setFlags(&tmp," -l log.txt");
+		fputs("testing file logging... ",stdout);
+		set_flags(&tmp," -l log.txt");
 
-		puts("TODO - IMPLEMENT!")
+		puts("TODO - IMPLEMENT!");
 
 		system(tmp);
 	}

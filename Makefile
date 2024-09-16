@@ -1,12 +1,12 @@
 
 CC=gcc
-CFILES= *.c argParse/*.c comp/fs/*.c comp/string/*.c
-CHEADERS = *.h argParse/*.h comp/fs/*.h comp/string/*.h
+CFILES= *.c argParse/*.c comp/fs/*.c 
+CHEADERS = *.h argParse/*.h comp/fs/*.h
 CCFLAGS = -ansi -pedantic
 OUTPUT = imgEdit
 
 TESTER_OUTPUT = test/test.exe
-TEST_CFILES= argParse/*.c comp/fs/*.c comp/string/*.c setup.c test/*.c
+TEST_CFILES= argParse/*.c comp/fs/*.c setup.c test/*.c
 
 ifeq ($(OS),Windows_NT)
     CCFLAGS += -D OS_WINDOWS
@@ -42,5 +42,5 @@ endif
 
 test:
 	$(CC) -o $(OUTPUT) $(CFILES) $(CCFLAGS)
-	$(CC) -o $(TESTER_OUTPUT) $(TEST_CFILES) $(CCFLAGS)
+	$(CC) -o $(TESTER_OUTPUT) $(TEST_CFILES) $(CCFLAGS) -D testing
 	./$(TESTER_OUTPUT)

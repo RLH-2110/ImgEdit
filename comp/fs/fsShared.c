@@ -6,7 +6,6 @@
 #include <stdlib.h>
 
 
-
 /*  /########\  */
 /* | Creating | */
 /*  \########/  */
@@ -120,7 +119,7 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 
 
 
-fsError open_file(const char* filePath){
+fsError open_file(const char* filePath, FILE** output){
 	
 	FILE *file;
 	int result;
@@ -157,6 +156,7 @@ fsError open_file(const char* filePath){
 
 	free(buff);
 
+	*output = file;
 	return fseNoError;
 }
 
@@ -307,3 +307,24 @@ fsError close_log_file(){
 }
 
 
+
+
+/*  /####\  */
+/* | UTIL | */
+/*  \####/  */
+
+
+/* initalizes and lineRead struct*/
+CALLER_FREES lineRead* create_lineRead(FILE* file){ 
+
+	lineRead *reader = malloc(sizeof(lineRead));
+	if (reader == NULL){
+		fputs("create_lineRead out of memory!",logOut);
+		error_exit(1);
+	}
+
+	reader->currentLine = 0;
+	reader->file = file;
+
+	return reader;
+}

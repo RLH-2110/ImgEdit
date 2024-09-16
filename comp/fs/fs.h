@@ -15,7 +15,8 @@ bool isDirectory(const char *path);
 /* creates a file and checks for write access */
 fsError create_file(const char* filePath, FILE **out_file);
 
-fsError open_file(const char* filePath);
+/* Opens file and stores it in output*/
+fsError open_file(const char* filePath, FILE** output);
 
 fsError write_file(const char* filePath, const char* buffer, size_t bufferSize);
 
@@ -38,5 +39,8 @@ fsError close_log_file();
 /* closes file, if its not NULL. Logs if log is non zero, otherwhise it wont log*/
 fsError close_file(FILE* file,bool log);
 
+
+/* initalizes and lineRead struct*/
+CALLER_FREES lineRead* create_lineRead(FILE* file);
 
 #endif /* fsH */

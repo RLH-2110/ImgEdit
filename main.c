@@ -8,7 +8,6 @@
 #include "argParse/args.h"
 #include "compat.h"
 #include "comp/fs/fs.h"
-#include "comp/string/str.h"
 
 #include "setup.h"
 
@@ -22,7 +21,7 @@ int main(int argc, char* argv[]){
 	get_args(argc, argv);
 
 	if (logFile != NULL)
-		setLogFile();
+		set_log_file();
 
 
 	fprintf(logOut,"%s version %sR%c %s\n",argv[0],VERSION,GRAPHICS_CHR,OS_STRING);
@@ -51,13 +50,13 @@ int main(int argc, char* argv[]){
 
 		for (i = 0;i < inputFilesC && str != NULL;i++){
 			fprintf(logOut,"(debug) Adding %s \n",inputFiles[i]);
-			strcat_c(&str,inputFiles[i]);
-			strcat_c(&str," ");
+			str = strcat(str,inputFiles[i]);
+			str = strcat(str," ");
 		}
 
 		if (str == NULL){
 			fputs("Main.c OUT OF MEMORY!",logOut);
-			errorExit(1);
+			error_exit(1);
 		}
 
 

@@ -49,8 +49,8 @@ typedef short bool;
 #endif
 
 #ifndef true
-#define true
-#define false
+#define true 1
+#define false 0
 #endif
 
 

@@ -9,14 +9,17 @@ typedef struct lineRead{
 	FILE *file;
 } lineRead;
 
+
 bool isDirectory(const char *path);
 
+/* gets file/directory flags */
+fsFlags getAttributes(const char *path);
 
-/* creates a file and checks for write access */
+/* creates a file and checks for write access. */
 fsError create_file(const char* filePath, FILE **out_file);
 
 /* Opens file and stores it in output*/
-fsError open_file(const char* filePath, FILE** output);
+fsError open_file(const char* filePath, char* fileFlags, FILE** output);
 
 fsError write_file(const char* filePath, const char* buffer, size_t bufferSize);
 

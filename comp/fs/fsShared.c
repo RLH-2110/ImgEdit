@@ -16,6 +16,7 @@
 fsError create_file(const char* filePath, FILE **out_file){
 	
 	int result;
+	int flags;
 
 	if (isDirectory(filePath)){
 		fputs("(debug) create_file error. File is a directory!\n",logOut);
@@ -32,13 +33,8 @@ fsError create_file(const char* filePath, FILE **out_file){
 		return fseNoOpen;
 	}
 
-	errno = 0;
-	if (fwrite("\r\n",1,2,*out_file) != 2){ /* write a newline into the file, to see if we have write access*/
-		fprintf(logOut,"(debug) create_file write access error. errno: %d\n",errno);
-		return fseWrongWrite;
-	}
 
-	/* Close file and reopen it, so the probed thing is gone */
+	/* Close file*/
 
 	errno = 0;
 	if (fclose(*out_file) != 0){
@@ -46,13 +42,21 @@ fsError create_file(const char* filePath, FILE **out_file){
 		return fseNoClose;
 	}
 
-	errno = 0;
-	*out_file = fopen(filePath,"w");
 
-	if (*out_file == NULL){
-		fprintf(logOut,"(debug) create_file second open error. errno: %d\n",errno);
-		return fseNoOpen;
+	/* Get flags and filter out flags that wont work for us*/
+	flags = getAttributes(filePath);
+
+	if (flags & fsfReadAccess == 0){
+		fprintf(logOut,"Error: create_file has no read access to %s\n",filePath);
+		return fseNoRead;
 	}
+
+	if (flags & fsfWriteAccess == 0){
+		fprintf(logOut,"Error: create_file has no write access to %s\n",filePath);
+		return fseNoWrite;
+	}
+
+
 
 	return fseNoError;
 }
@@ -119,16 +123,38 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 
 
 
-fsError open_file(const char* filePath, FILE** output){
+fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	
 	FILE *file;
 	int result;
 	char* buff;
+	int flags;
 
-	if (isDirectory(filePath)){
-		fputs("(debug) open_file error. File is a directory!\n",logOut);
+	if (!filePath || !flags){ /* if parameters are NULL */
+	fputs("Error: open_file got a NULL. Only output may be NULL!",logOut);
+		return fseLogic;
+	}
+
+
+	/* Get flags and filter out flags that wont work for us*/
+	flags = getAttributes(filePath);
+
+	if (flags & fsfReadAccess == 0 && fileFlags[0] == 'r'){
+		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
+		return fseNoRead;
+	}
+
+	if (flags & fsfWriteAccess == 0 && fileFlags[0] == 'w'){
+		fprintf(logOut,"Error: open_file has no write access to %s\n",filePath);
+		return fseNoWrite;
+	}
+
+	if (flags & fsfIsDirectory){
+		fprintf(logOut,"Error: open_file error! %s is a directory!\n",filePath);
 		return fseIsDirectory;
 	}
+
+
 
 	errno = 0;
 	file = fopen(filePath,"w");
@@ -146,15 +172,15 @@ fsError open_file(const char* filePath, FILE** output){
 	}
 
 	/* probe if reading works */
-	buff = fgets(buff, 2, file );
+	/*buff = fgets(buff, 2, file );
 
 	/* go back to file start*/
-	if (fseek(file,0,SEEK_SET) != 0 || buff == NULL){
+	/*if (fseek(file,0,SEEK_SET) != 0 || buff == NULL){
 		fputs("Error: open_file can't seem to have read access!",logOut);
 		return fseNoRead;
 	}
 
-	free(buff);
+	free(buff);*/
 
 	*output = file;
 	return fseNoError;

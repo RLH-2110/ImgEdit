@@ -4,12 +4,6 @@
 #include "../../defines.h"
 #include <fileapi.h>
 
-bool isDirectory(const char *path) {
-	DWORD attributes = GetFileAttributesA(path);
-	if (attributes == INVALID_FILE_ATTRIBUTES)
-		return 0;	
-	return attributes & FILE_ATTRIBUTE_DIRECTORY; /* returns non-zero if its a directory*/
-}
 
 fsFlags getAttributes(const char *path){
 	int flags;

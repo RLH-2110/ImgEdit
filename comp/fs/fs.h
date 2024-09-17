@@ -10,7 +10,6 @@ typedef struct lineRead{
 } lineRead;
 
 
-bool isDirectory(const char *path);
 
 /* gets file/directory flags */
 fsFlags getAttributes(const char *path);

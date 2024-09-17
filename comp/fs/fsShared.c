@@ -124,11 +124,16 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 
 
 fsError open_file(const char* filePath, char* fileFlags, FILE** output){
-	
+
 	FILE *file;
 	int result;
 	char* buff;
 	int flags;
+
+	
+	printf("\n\noutput location: %p\n",(void*)&output);
+	printf("output address: %p\n",(void*)output);
+	printf("*output address: %p\n\n",(void*)*output);
 
 	if (!filePath || !fileFlags || !output){ /* if parameters are NULL */
 		fputs("Error: open_file got a does not take NULL\n",logOut);
@@ -154,7 +159,7 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	}
 
 	errno = 0;
-	file = fopen(filePath,"w");
+	file = fopen(filePath,fileFlags);
 
 	if (file == NULL){
 		fprintf(logOut,"(debug) open_file open error. errno: %d\n",errno);

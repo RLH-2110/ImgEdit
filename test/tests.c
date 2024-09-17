@@ -80,13 +80,16 @@ int main(){
 		if (close_file(file,false) != fseNoError)
 			critical_test_fail;
 		
-		
+		printf("\n\n&file address: %p\n",(void*)&file);
+		printf("file address: %p\n\n",(void*)file);
 		errno = 0;
 		if (open_file("out.txt","w",&file) != fseNoError)
 			critical_test_fail();
 		if (errno != 0)
 			critical_test_fail();
 
+		printf("\n\n&file address: %p\n",(void*)&file);
+		printf("file address: %p\n\n",(void*)file);
 
 		reader = create_lineRead(file);
 

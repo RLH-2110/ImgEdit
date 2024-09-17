@@ -4,15 +4,24 @@
 #include "../../defines.h"
 #include <dos.h>
 
-bool isDirectory(const char *path) {
 
+fsFlags getAttributes(const char *path){
+	int flags;
 	struct find_t fileinfo;
-	if (_dos_findfirst(path,_A_SUBDIR,&fileinfo) == 0){ /* return 0 = found. we searched for the path as a directory*/
-		return 1;
-	}
-	return 0;
-}
 
+	flags = 0;
+
+	/* DOS check if file is directory*/
+	if (_dos_findfirst(path,_A_SUBDIR,&fileinfo) == 0){ /* return 0 = found. we searched for the path as a directory*/
+		flags += fsfIsDirectory;
+
+
+	/* DOS does not have access flags*/
+	flags += fsfWriteAccess;
+	flags += fsfReadAccess; 
+
+	return flags; /* returns non-zero if its a directory*/
+}
 
 /* OS_DOS */
 #endif 

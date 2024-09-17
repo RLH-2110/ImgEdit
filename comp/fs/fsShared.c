@@ -18,7 +18,7 @@ fsError create_file(const char* filePath, FILE **out_file){
 	int result;
 	int flags;
 
-	if (isDirectory(filePath)){
+	if (getAttributes(filePath) & fsfIsDirectory){
 		fputs("(debug) create_file error. File is a directory!\n",logOut);
 		return fseIsDirectory;
 	}
@@ -83,7 +83,7 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 	FILE *file;
 	int result;
 
-	if (isDirectory(filePath)){
+	if (getAttributes(filePath) & fsfIsDirectory){
 		fputs("(debug) write_file error. File is a directory!\n",logOut);
 		return fseIsDirectory;
 	}

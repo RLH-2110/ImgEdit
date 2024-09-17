@@ -130,11 +130,10 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	char* buff;
 	int flags;
 
-	if (!filePath || !flags){ /* if parameters are NULL */
-	fputs("Error: open_file got a NULL. Only output may be NULL!",logOut);
+	if (!filePath || !fileFlags || !output){ /* if parameters are NULL */
+		fputs("Error: open_file got a does not take NULL\n",logOut);
 		return fseLogic;
 	}
-
 
 	/* Get flags and filter out flags that wont work for us*/
 	flags = getAttributes(filePath);
@@ -154,8 +153,6 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		return fseIsDirectory;
 	}
 
-
-
 	errno = 0;
 	file = fopen(filePath,"w");
 
@@ -164,25 +161,12 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		return fseNoOpen;
 	}
 
+	puts("set mem");
 	
-	buff = malloc(3);
-	if (buff == NULL){
-		fputs("(debug) open_file ran out of memory!",logOut);
-		return fseMemory;
-	}
-
-	/* probe if reading works */
-	/*buff = fgets(buff, 2, file );
-
-	/* go back to file start*/
-	/*if (fseek(file,0,SEEK_SET) != 0 || buff == NULL){
-		fputs("Error: open_file can't seem to have read access!",logOut);
-		return fseNoRead;
-	}
-
-	free(buff);*/
-
 	*output = file;
+
+	puts("done setting mem");
+	
 	return fseNoError;
 }
 

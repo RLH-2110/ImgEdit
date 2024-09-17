@@ -63,7 +63,7 @@ void set_flags(char **result, const char *flags){
 
 int main(){
 
-	puts(""); /* print new line, so we have a bit of distance to the `make` output */
+	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
 	setup();
 
 	failed = 0;
@@ -71,7 +71,7 @@ int main(){
 
 	{ /* TEST 1 */
 		fputs("testing file writing and reading... ",stdout);
-		
+
 		error = fseNoError;
 		error =  write_file("out.txt", "Hello World\n12", 15);
 		if (error != fseNoError)
@@ -80,9 +80,9 @@ int main(){
 		if (close_file(file,false) != fseNoError)
 			critical_test_fail;
 		
-
+		
 		errno = 0;
-		if (open_file("out.txt",&file) != fseNoError)
+		if (open_file("out.txt","w",&file) != fseNoError)
 			critical_test_fail();
 		if (errno != 0)
 			critical_test_fail();

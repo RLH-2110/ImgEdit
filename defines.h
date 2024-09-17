@@ -71,7 +71,18 @@ typedef short bool;
 /* /#########\ */
 /*|ERROR TYPES|*/
 /* \#########/ */
-typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile, fseNoRead, fseMemory} fsError; 
+typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile, fseNoRead, fseNoWrite, fseMemory, fseLogic} fsError; 
+
+/* /###\ */
+/*|Enums|*/
+/* \###/ */
+typedef enum {	
+	fsfInvalid		= 0x00,
+	fsfReadAccess 	= 0x01,
+	fsfWriteAccess 	= 0x02,
+	fsfIsDirectory	= 0x04
+} fsFlags; 
+
 
 #endif
 

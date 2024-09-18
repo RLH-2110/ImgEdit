@@ -6,7 +6,7 @@ CCFLAGS = -ansi -pedantic
 OUTPUT = imgEdit
 
 TESTER_OUTPUT = test/test.exe
-TEST_CFILES= argParse/*.c comp/fs/*.c setup.c test/*.c
+TEST_CFILES= argParse/*.c comp/fs/*.c test/*.c str.c setup.c
 
 ifeq ($(OS),Windows_NT)
     CCFLAGS += -D OS_WINDOWS

@@ -131,10 +131,6 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	int flags;
 
 	
-	printf("\n\noutput location: %p\n",(void*)&output);
-	printf("output address: %p\n",(void*)output);
-	printf("*output address: %p\n\n",(void*)*output);
-
 	if (!filePath || !fileFlags || !output){ /* if parameters are NULL */
 		fputs("Error: open_file got a does not take NULL\n",logOut);
 		return fseLogic;
@@ -165,12 +161,8 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		fprintf(logOut,"(debug) open_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}
-
-	puts("set mem");
 	
 	*output = file;
-
-	puts("done setting mem");
 	
 	return fseNoError;
 }
@@ -211,7 +203,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 		return NULL;
 	}
 
-	if (line > reader->currentLine){
+	if (line < reader->currentLine){
 		if (fseek(reader->file,0,SEEK_SET) != 0){
 			fputs("Error: read_line failed seeking the begining of the file",logOut);
 			errno = EIO;
@@ -242,10 +234,9 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 		}
 	}
 
-
 	/* We are in the correct line now !*/
 
-	buff = fgets( buff, TEXT_READ_BUFF_SIZE - 1, reader->file ); /* read line */
+	buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read line */
 	if (feof(reader->file) && buff == NULL){
 		fputs("Error: read_line function cant reach the specefied line, it does not exist!",logOut);
 		errno = ESPIPE; /* ESPIPE  = Illegal seek */
@@ -253,6 +244,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 	}
 	if (ferror(reader->file) || buff == NULL){
 		fputs("Error: read_line function had an IO error!",logOut);
+		printf("\n\t\terrno: %d\n",errno); /* errno 9 */
 		errno = EIO;
 		return NULL;
 	}
@@ -293,7 +285,7 @@ fsError close_file(FILE* file,bool log){
 			fputs("closing file...",logOut);
 
 		errno = 0;
-		if (fclose(logOut) != 0){
+		if (fclose(file) != 0){
 			fprintf(logOut,"close_log_file error! errno: %d\nLOG FILE COULD NOT BE CLOSED!\n",errno);
 			return fseNoClose;
 		}
@@ -316,6 +308,8 @@ fsError close_log_file(){
 			fprintf(logOut,"close_log_file error! errno: %d\nLOG FILE COULD NOT BE CLOSED!\n",errno);
 			return fseNoClose;
 		}
+
+		logOut = stdout;
 	}
 
 	return fseNoError;

@@ -6,6 +6,7 @@
 
 #include "../comp/fs/fs.h"
 #include "../compat.h"
+#include "../str.h"
 #include "tests.h"
 
 #include "../setup.h"
@@ -23,6 +24,9 @@
 
 int failed;
 int passed;
+
+int i;
+
 char *sInputA;
 char *sInputB;
 char *sInputC;
@@ -46,19 +50,33 @@ void critical_test_fail(){
 	exit(1);
 }
 
-void set_flags(char **result, const char *flags){
-	free(*result);
-	*result = malloc(1);
+char* set_flags(CALLER_FREES char *result, const char *flags){
+
 	
-	if (*result == NULL)
+
+	if (!flags){
+		puts("set_flags: flags should not be a NULL pointer!");
+		close_log_file();
+		exit(1);
+	}
+	if (result != NULL){
+		fputs("WARNING: input pointer is not NULL! It will be freed now! ",stdout);
+		free(result);
+	}
+	result = malloc(1);
+
+	if (result == NULL)
 		oom();
 
-	*result[0] = 0;
+	result[0] = 0;
 
-	*result = strcat(*result,EXECPATH);
-	*result = strcat(*result,flags);
-	if (!*result) /* if null */
+	result = strcat_c(result,EXECPATH);
+	result = strcat_c(result,flags);
+
+	if (result == NULL)
 		oom();
+
+	return result;
 }
 
 int main(){
@@ -69,58 +87,113 @@ int main(){
 	failed = 0;
 	passed = 0;
 
+	{ /* TEST 0 */
+		fputs("testing strcat_c... ",stdout);
+
+
+		sInputA = "hallo";
+		sInputB = " Welt";
+		sInputC = "!";
+		sExpected = "hallo Welt!";
+
+
+		tmp = malloc(1);
+		if (!tmp)
+			oom();
+		tmp[0] = 0;
+
+		tmp = strcat_c(tmp,sInputA);
+		tmp = strcat_c(tmp,sInputB);
+		tmp = strcat_c(tmp,sInputC);
+
+		if (tmp == NULL)
+			critical_test_fail();
+
+		if (strcmp(tmp,sExpected) != 0)
+			critical_test_fail();
+
+		free(tmp); tmp = NULL;
+
+		passed++;
+		puts(" passed!");
+	}
+
 	{ /* TEST 1 */
 		fputs("testing file writing and reading... ",stdout);
 
 		error = fseNoError;
-		error =  write_file("out.txt", "Hello World\n12", 15);
-		if (error != fseNoError)
-			critical_test_fail();
 
-		if (close_file(file,false) != fseNoError)
-			critical_test_fail;
-		
-		printf("\n\n&file address: %p\n",(void*)&file);
-		printf("file address: %p\n\n",(void*)file);
-		errno = 0;
-		if (open_file("out.txt","w",&file) != fseNoError)
-			critical_test_fail();
-		if (errno != 0)
-			critical_test_fail();
+		/* creating and writing the file*/
+		{
+			error =  write_file("out.txt", "Hello World\n12", 15);
+			if (error != fseNoError)
+				critical_test_fail();
 
-		printf("\n\n&file address: %p\n",(void*)&file);
-		printf("file address: %p\n\n",(void*)file);
-
-		reader = create_lineRead(file);
-
-		/* Reads the speciefied line of a file, if it exists
-	reader: stuct that contains the FILE pointer and the currentLine (should be set to 0 and then let the function handle it)
-	line: the line you want to read (starts at 0)
-
-	returns: char pointer to the line. YOU HAVE TO FREE IT!
-
-	errnos: EINVAL, EIO, ENOMEM, ESPIPE
-*/
-		sExpected = "Hello World\n";
-		errno = 0;
-		tmp = read_line(reader,0);
-		fputs(tmp,stdout);
-		if (strcmp(tmp,sExpected) == 0){
-			puts("same string!");
+			if (close_file(file,false) != fseNoError)
+				critical_test_fail();
+			file = NULL;
 		}
-		free(tmp);
 
-		sExpected = "12";
-		errno = 0;
-		tmp = read_line(reader, 0);
-		
-		free(tmp);
+		/* Opens the file and prepares the reader*/
 
-		if (close_file(file,false) != fseNoError)
-			critical_test_fail;
+		{
+			errno = 0;
+			if (open_file("out.txt","r",&file) != fseNoError)
+				critical_test_fail();
+			if (errno != 0)
+				critical_test_fail();
 
-		free(reader);
+			reader = create_lineRead(file);
+		}
 
+
+		/* read first line */
+		{
+			sExpected = "Hello World\n";
+			errno = 0;
+			tmp = read_line(reader,0);
+
+			if (strcmp(tmp,sExpected) != 0)
+				critical_test_fail();
+			
+			free(tmp); tmp = NULL;
+
+		}
+
+		/* read second/last line */
+		{
+			sExpected = "12";
+			errno = 0;
+			tmp = read_line(reader, 1);
+
+			if (strcmp(tmp,sExpected) != 0)
+				critical_test_fail();
+
+			free(tmp); tmp = NULL;
+		}
+
+		/* read first line again (twice), to see if we can go backwards or stay backwards*/
+		for (i = 0;i < 2;i++)
+		{
+
+			sExpected = "Hello World\n";
+			errno = 0;
+			tmp = read_line(reader, 0);
+
+			if (strcmp(tmp,sExpected) != 0)
+				critical_test_fail();
+
+			free(tmp); tmp = NULL;
+		}
+
+		if (close_file(reader->file,false) != fseNoError)
+			critical_test_fail();
+		reader->file = NULL;
+
+		free(reader); reader = NULL;
+
+		puts("passed!");
+		passed++;
 	}
 
 
@@ -129,14 +202,18 @@ int main(){
 
 	{ /* TEST 2 */
 		fputs("testing file logging... ",stdout);
-		set_flags(&tmp," -l log.txt");
+		tmp = set_flags(tmp," -l log.txt");
 
 		puts("TODO - IMPLEMENT!");
 
+		/*
+		this causes errors. read up on it!
 		system(tmp);
+		free(tmp); tmp = NULL;*/
 	}
 
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS);
+	close_log_file();
 	return 0;
 }

@@ -1,4 +1,5 @@
 #include "../../defines.h"
+#include "../../setup.h"
 #include "fs.h" /* to get the isDirectory definition*/
 
 #include <stdio.h>
@@ -337,3 +338,4 @@ CALLER_FREES lineRead* create_lineRead(FILE* file){
 
 	return reader;
 }
+

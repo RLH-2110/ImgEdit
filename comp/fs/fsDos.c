@@ -12,7 +12,7 @@ fsFlags getAttributes(const char *path){
 	flags = 0;
 
 	/* DOS check if file is directory*/
-	if (_dos_findfirst(path,_A_SUBDIR,&fileinfo) == 0){ /* return 0 = found. we searched for the path as a directory*/
+	if (_dos_findfirst(path,_A_SUBDIR,&fileinfo) == 0) /* return 0 = found. we searched for the path as a directory*/
 		flags += fsfIsDirectory;
 
 

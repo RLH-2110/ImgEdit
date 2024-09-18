@@ -8,6 +8,7 @@
 #include "argParse/args.h"
 #include "compat.h"
 #include "comp/fs/fs.h"
+#include "str.h"
 
 #include "setup.h"
 
@@ -50,8 +51,8 @@ int main(int argc, char* argv[]){
 
 		for (i = 0;i < inputFilesC && str != NULL;i++){
 			fprintf(logOut,"(debug) Adding %s \n",inputFiles[i]);
-			str = strcat(str,inputFiles[i]);
-			str = strcat(str," ");
+			str = strcat_c(str,inputFiles[i]);
+			str = strcat_c(str," ");
 		}
 
 		if (str == NULL){

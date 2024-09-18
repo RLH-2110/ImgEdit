@@ -32,6 +32,11 @@ void append_arg(char *arg, char ***list, int *listC){
 		*list[0] = arg; /* set the first element in the list to the argument pointer */	
 	}else{
 		*listC = *listC + 1;
+		if (*listC == 0){
+			/* If we got here, then that means there are so many parameters that we had an overflow. That sucks.*/
+			fputs("ERROR: too many arguments for a flag! We had an overflow, what the fuck did you do to cause this?\n",logOut);
+			error_exit(1);
+		}
 
 		*list = realloc(*list,*listC * sizeof(char*)); /* make space for one more pointer */
 

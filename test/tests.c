@@ -7,8 +7,9 @@
 #include "../comp/fs/fs.h"
 #include "../compat.h"
 #include "../str.h"
-#include "tests.h"
+#include "../int.h"
 
+#include "tests.h"
 #include "../setup.h"
 
 #ifdef OS_POSIX

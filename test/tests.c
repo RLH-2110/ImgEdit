@@ -252,7 +252,7 @@ void test2(){ /* TEST 2 */
 		errno = 0;
 		tmp = read_line(reader,0);
 
-		if (errno != 0 || tmp = NULL) {
+		if (errno != 0 || tmp == NULL) {
 			fail = true;
 			goto test2_cleanup;
 		}

@@ -1,6 +1,9 @@
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../defines.h"
+#include "../setup.h"
+
 #include "flags.h"
 
 

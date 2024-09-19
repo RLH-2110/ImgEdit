@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "../argParse/flags.h"
 #include "../comp/fs/fs.h"
 #include "../compat.h"
 #include "../str.h"
@@ -23,10 +24,16 @@
 #endif
 
 
+
+
+#ifdef testing
+
 int failed;
 int passed;
 
 int i;
+
+bool fail; /* for test functions to see if they failed locally*/
 
 char *sInputA;
 char *sInputB;
@@ -53,7 +60,7 @@ void critical_test_fail(){
 
 char* set_flags(CALLER_FREES char *result, const char *flags){
 
-	
+
 
 	if (!flags){
 		puts("set_flags: flags should not be a NULL pointer!");
@@ -80,15 +87,7 @@ char* set_flags(CALLER_FREES char *result, const char *flags){
 	return result;
 }
 
-int main(){
-
-	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
-	setup();
-
-	failed = 0;
-	passed = 0;
-
-	{ /* TEST 0 */
+void test0(){ /* TEST 0 */
 		fputs("testing strcat_c... ",stdout);
 
 
@@ -115,106 +114,203 @@ int main(){
 
 		free(tmp); tmp = NULL;
 
-		passed++;
 		puts(" passed!");
+		passed++;
+}
+
+
+
+
+
+
+
+
+void test1(){ /* TEST 1 */
+	fputs("testing file writing and reading... ",stdout);
+
+	error = fseNoError;
+
+	/* creating and writing the file*/
+	{
+		error =  write_file("out.txt", "Hello World\n12", 15);
+		if (error != fseNoError)
+			critical_test_fail();
+
+		if (close_file(file,false) != fseNoError)
+			critical_test_fail();
+		file = NULL;
 	}
 
-	{ /* TEST 1 */
-		fputs("testing file writing and reading... ",stdout);
+	/* Opens the file and prepares the reader*/
 
-		error = fseNoError;
+	{
+		errno = 0;
+		if (open_file("out.txt","r",&file) != fseNoError)
+			critical_test_fail();
+		if (errno != 0)
+			critical_test_fail();
 
-		/* creating and writing the file*/
-		{
-			error =  write_file("out.txt", "Hello World\n12", 15);
-			if (error != fseNoError)
-				critical_test_fail();
-
-			if (close_file(file,false) != fseNoError)
-				critical_test_fail();
-			file = NULL;
-		}
-
-		/* Opens the file and prepares the reader*/
-
-		{
-			errno = 0;
-			if (open_file("out.txt","r",&file) != fseNoError)
-				critical_test_fail();
-			if (errno != 0)
-				critical_test_fail();
-
-			reader = create_lineRead(file);
-		}
+		reader = create_lineRead(file);
+	}
 
 
-		/* read first line */
-		{
-			sExpected = "Hello World\n";
-			errno = 0;
-			tmp = read_line(reader,0);
+	/* read first line */
+	{
+		sExpected = "Hello World\n";
+		errno = 0;
+		tmp = read_line(reader,0);
 
-			if (strcmp(tmp,sExpected) != 0)
-				critical_test_fail();
-			
-			free(tmp); tmp = NULL;
+		if (errno != 0)
+			critical_test_fail();
 
-		}
+		if (strcmp(tmp,sExpected) != 0)
+			critical_test_fail();
 
-		/* read second/last line */
-		{
-			sExpected = "12";
-			errno = 0;
-			tmp = read_line(reader, 1);
+		free(tmp); tmp = NULL;
 
-			if (strcmp(tmp,sExpected) != 0)
-				critical_test_fail();
+	}
 
-			free(tmp); tmp = NULL;
-		}
+	/* read second/last line */
+	{
+		sExpected = "12";
+		errno = 0;
+		tmp = read_line(reader, 1);
 
-		/* read first line again (twice), to see if we can go backwards or stay backwards*/
-		for (i = 0;i < 2;i++)
-		{
+		if (errno != 0)
+			critical_test_fail();
 
-			sExpected = "Hello World\n";
-			errno = 0;
-			tmp = read_line(reader, 0);
+		if (strcmp(tmp,sExpected) != 0)
+			critical_test_fail();
 
-			if (strcmp(tmp,sExpected) != 0)
-				critical_test_fail();
+		free(tmp); tmp = NULL;
+	}
 
-			free(tmp); tmp = NULL;
-		}
+	/* read first line again (twice), to see if we can go backwards or stay backwards*/
+	for (i = 0;i < 2;i++)
+	{
+
+		sExpected = "Hello World\n";
+		errno = 0;
+		tmp = read_line(reader, 0);
+
+		if (errno != 0)
+			critical_test_fail();
+
+		if (strcmp(tmp,sExpected) != 0)
+			critical_test_fail();
+
+		free(tmp); tmp = NULL;
+	}
+
+	if (close_file(reader->file,false) != fseNoError)
+		critical_test_fail();
+	reader->file = NULL;
+
+	free(reader); reader = NULL;
+
+	puts("passed!");
+	passed++;
+}
+
+
+
+
+
+
+
+void test2(){ /* TEST 2 */
+	fail = false;
+
+	puts("hi setting log");
+
+	fputs("testing file logging... ",stdout);
+
+	puts("kaka");
+
+	logFile = "log.txt";
+	set_log_file();
+	fputs("Logging test!",logOut);
+	close_log_file();
+
+	puts("hi prep");
+
+	/* Opens the file and prepares the reader*/
+
+	{
+		errno = 0;
+		if (open_file("log.txt","r",&file) != fseNoError)
+			fail = true;
+		if (errno != 0)
+			fail = true;
+
+		reader = create_lineRead(file);
+	}
+
+
+	puts("hi open");
+
+	/* read first line */
+	{
+		sExpected = "Logging test!";
+		errno = 0;
+		tmp = read_line(reader,0);
+
+		if (errno != 0)
+			fail = true;
+
+		if (strcmp(tmp,sExpected) != 0)
+			fail = true;
+
+
+		puts("hi 0");
+
+		free(tmp); tmp = NULL;
+
+		puts("hi 1");
 
 		if (close_file(reader->file,false) != fseNoError)
-			critical_test_fail();
+			fail = true;
 		reader->file = NULL;
+
+		puts("hi 2");
 
 		free(reader); reader = NULL;
 
-		puts("passed!");
-		passed++;
+
+		puts("hi 3 - done");
+
+		set_log_file();
+
+		if (!fail){
+			puts("passed!");
+			passed++;
+		}else{
+			puts("failed!");
+			failed++;
+		}
 	}
+}
 
+int main(){
 
+	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
+	setup();
 
+	failed = 0;
+	passed = 0;
 
-
-	{ /* TEST 2 */
-		fputs("testing file logging... ",stdout);
-		tmp = set_flags(tmp," -l log.txt");
-
-		puts("TODO - IMPLEMENT!");
-
-		/*
-		this causes errors. read up on it!
-		system(tmp);
-		free(tmp); tmp = NULL;*/
-	}
-
+	test0();
+	test1();
+	puts("hi test2");
+	test2();
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS);
 	close_log_file();
 	return 0;
 }
+
+/* testing */
+#endif
+
+typedef int make_iso_compiler_happy;
+

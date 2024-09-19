@@ -24,13 +24,13 @@ fsError create_file(const char* filePath, FILE **out_file){
 		return fseIsDirectory;
 	}
 
-	/* Create file and probe */
+	/* Create file */
 
 	errno = 0;
 	*out_file = fopen(filePath,"w");
 
 	if (*out_file == NULL){
-		fprintf(logOut,"(debug) create_file open error. errno: %d\n",errno);
+		fprintf(logOut,"Error: create_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}
 
@@ -39,7 +39,7 @@ fsError create_file(const char* filePath, FILE **out_file){
 
 	errno = 0;
 	if (fclose(*out_file) != 0){
-		fprintf(logOut,"(debug) create_file close error. errno: %d\n",errno);
+		fprintf(logOut,"Error: create_file close error. errno: %d\n",errno);
 		return fseNoClose;
 	}
 

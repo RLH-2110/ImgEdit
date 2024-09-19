@@ -12,6 +12,7 @@
 
 #include "setup.h"
 
+#ifndef testing
 
 int main(int argc, char* argv[]){
 	char* str;
@@ -27,7 +28,7 @@ int main(int argc, char* argv[]){
 
 	fprintf(logOut,"%s version %sR%c %s\n",argv[0],VERSION,GRAPHICS_CHR,OS_STRING);
 
-	
+
 
 	fprintf(logOut,"(debug) argument flag variable (hex): %x\n",argumentFlags);
 
@@ -71,4 +72,7 @@ int main(int argc, char* argv[]){
 	return 0;
 }
 
+/* testing */
+#endif
 
+typedef int make_iso_compiler_happy;

@@ -217,8 +217,29 @@ void test1(){ /* TEST 1 */
 
 
 
-
 void test2(){ /* TEST 2 */
+	fail = false;
+
+	fputs("testing create_file function... ",stdout);
+
+	create_file("log.txt",&file);
+
+	/* chceck if file exists here */
+
+	puts("TODO ADD TEST 2!");
+
+/*
+	if (!fail){
+		puts("passed!");
+		passed++;
+	}else{
+		puts("failed!");
+		failed++;
+	}*/
+}
+
+
+void test3(){ /* TEST 3 */
 	fail = false;
 
 	fputs("testing file logging... ",stdout);
@@ -235,11 +256,11 @@ void test2(){ /* TEST 2 */
 		errno = 0;
 		if (open_file("log.txt","r",&file) != fseNoError){
 			fail = true;
-			goto test2_cleanup;
+			goto test3_cleanup;
 		}
 		if (errno != 0){
 			fail = true;
-			goto test2_cleanup;
+			goto test3_cleanup;
 		}
 
 		reader = create_lineRead(file);
@@ -254,24 +275,23 @@ void test2(){ /* TEST 2 */
 
 		if (errno != 0 || tmp == NULL) {
 			fail = true;
-			goto test2_cleanup;
+			goto test3_cleanup;
 		}
 
 		if (strcmp(tmp,sExpected) != 0) {
 			fail = true;
-			goto test2_cleanup;
+			goto test3_cleanup;
 		}
 
 
 
-	test2_cleanup:
+	test3_cleanup:
 
 		free(tmp); tmp = NULL;
 
-		if (close_file(reader->file,false) != fseNoError){
+		if (close_file(reader->file,false) != fseNoError)
 			fail = true;
-			goto test2_cleanup;
-		}
+		
 		reader->file = NULL;
 
 		free(reader); reader = NULL;

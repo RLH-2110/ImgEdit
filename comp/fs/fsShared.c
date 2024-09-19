@@ -13,7 +13,7 @@
 
 
 
-/* creates a file and checks for write access */
+/* creates a file and checks for write access, then closes the file*/
 fsError create_file(const char* filePath, FILE **out_file){
 	
 	int result;

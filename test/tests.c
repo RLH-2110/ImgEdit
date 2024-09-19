@@ -208,8 +208,9 @@ void test1(){ /* TEST 1 */
 		free(tmp); tmp = NULL;
 	}
 
-	if (close_file(reader->file,false) != fseNoError)
-		critical_test_fail();
+	if (reader != NULL)
+		if (close_file(reader->file,false) != fseNoError)
+			critical_test_fail();
 	reader->file = NULL;
 
 	free(reader); reader = NULL;
@@ -259,6 +260,12 @@ void test3(){ /* TEST 3 */
 
 	fputs("testing file logging... ",stdout);
 
+	remove("log.txt");
+	if (getAttributes("log.txt") != 0) {
+		puts("test can't commence!");
+		return;
+	}
+
 	logFile = "log.txt";
 	set_log_file();
 	fputs("Logging test!",logOut);
@@ -304,8 +311,9 @@ void test3(){ /* TEST 3 */
 
 		free(tmp); tmp = NULL;
 
-		if (close_file(reader->file,false) != fseNoError)
-			fail = true;
+		if (reader != NULL)
+			if (close_file(reader->file,false) != fseNoError)
+				fail = true;
 		
 		reader->file = NULL;
 

@@ -13,7 +13,7 @@ void setup(){
 	logOut = stdout; /* log in the Terminal*/
 }
 
-void set_log_file(){
+bool set_log_file(){
 
 	FILE *tmp;
 
@@ -24,8 +24,10 @@ void set_log_file(){
 	if (create_file(logFile, &tmp) == fseNoError){
 		logOut = tmp;
 		fprintf(logOut,"set log file to: %s\n",logFile);
+		return true;
 	}else{
 		fprintf(logOut,"error setting log file to: %s\n",logFile);
+		return false;
 	}
 	
 }

@@ -128,8 +128,14 @@ void test0(){ /* TEST 0 */
 void test1(){ /* TEST 1 */
 	fputs("testing file writing and reading... ",stdout);
 
-	error = fseNoError;
+	remove("out.txt");
+	if (getAttributes("out.txt") != 0) {
+		puts("test can't commence!");
+		critical_test_fail();
+		return;
+	}
 
+	error = fseNoError;
 	/* creating and writing the file*/
 	{
 		error =  write_file("out.txt", "Hello World\n12", 15);
@@ -222,20 +228,32 @@ void test2(){ /* TEST 2 */
 
 	fputs("testing create_file function... ",stdout);
 
+	remove("log.txt");
+	if (getAttributes("log.txt") != 0) {
+		puts("test can't commence!");
+		return;
+	}
+	
+
 	create_file("log.txt",&file);
 
 	/* chceck if file exists here */
 
+	if (getAttributes("log.txt") == 0) {
+		fail = true;
+	}
+
+
 	puts("TODO ADD TEST 2!");
 
-/*
+
 	if (!fail){
 		puts("passed!");
 		passed++;
 	}else{
 		puts("failed!");
 		failed++;
-	}*/
+	}
 }
 
 
@@ -320,6 +338,7 @@ int main(){
 	test0();
 	test1();
 	test2();
+	test3();
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS);
 	close_log_file();

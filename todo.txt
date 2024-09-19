@@ -1,2 +1,1 @@
-make tests
-add COMPTEST.BAT
+when getting file atribs, check that the file actually exists

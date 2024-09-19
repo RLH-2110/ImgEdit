@@ -17,6 +17,10 @@ void set_log_file(){
 
 	FILE *tmp;
 
+	if (logFile == NULL){
+		puts("Error: set_log_file: logFile variable must not be NULL!");
+	}
+
 	if (create_file(logFile, &tmp) == fseNoError){
 		logOut = tmp;
 		fprintf(logOut,"set log file to: %s\n",logFile);

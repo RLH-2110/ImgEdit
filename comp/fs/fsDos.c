@@ -26,6 +26,8 @@ fsFlags getAttributes(const char *path){
 			
 			flags += fsfReadAccess; 
 		}
+	}else{ /* No File found! */
+		return fsfInvalid;
 	}
 	
 	return flags; /* returns non-zero if its a directory*/

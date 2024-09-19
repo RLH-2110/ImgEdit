@@ -158,7 +158,7 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	errno = 0;
 	file = fopen(filePath,fileFlags);
 
-	if (file == NULL){
+	if (file == NULL || errno != 0){
 		fprintf(logOut,"(debug) open_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}

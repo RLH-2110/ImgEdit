@@ -267,9 +267,15 @@ void test3(){ /* TEST 3 */
 	}
 
 	logFile = "log.txt";
-	set_log_file();
+	if (set_log_file() == false){
+		failed++;
+		return;
+	}
 	fputs("Logging test!",logOut);
-	close_log_file();
+	if (close_log_file() == fseNoClose){
+		failed++;
+		return;
+	}
 
 
 	/* Opens the file and prepares the reader*/

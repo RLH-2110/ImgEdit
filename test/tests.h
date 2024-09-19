@@ -4,7 +4,7 @@
 extern int passed;
 extern int failed;
 
-#define NUM_TESTS 3
+#define NUM_TESTS 4
 
 /* testH */
 #endif

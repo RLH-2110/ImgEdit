@@ -244,9 +244,6 @@ void test2(){ /* TEST 2 */
 	}
 
 
-	puts("TODO ADD TEST 2!");
-
-
 	if (!fail){
 		puts("passed!");
 		passed++;

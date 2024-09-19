@@ -17,7 +17,7 @@ char* strcat_c(char *dest, const char *src){
 
 	if (!dest || !src){ /* If dest or src are null*/
 		fputs("ERROR: strcat_c does not take NULL!",logOut);
-		return;
+		return NULL;
 	}
 
 

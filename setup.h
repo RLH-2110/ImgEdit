@@ -7,7 +7,7 @@ extern FILE *logOut;
 
 void setup();
 void set_log_file();
-void errorExit(int status);
+void error_exit(int status);
 
 /* setupH */
 #endif

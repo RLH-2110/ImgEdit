@@ -221,33 +221,30 @@ void test1(){ /* TEST 1 */
 void test2(){ /* TEST 2 */
 	fail = false;
 
-	puts("hi setting log");
-
 	fputs("testing file logging... ",stdout);
-
-	puts("kaka");
 
 	logFile = "log.txt";
 	set_log_file();
 	fputs("Logging test!",logOut);
 	close_log_file();
 
-	puts("hi prep");
 
 	/* Opens the file and prepares the reader*/
 
 	{
 		errno = 0;
-		if (open_file("log.txt","r",&file) != fseNoError)
+		if (open_file("log.txt","r",&file) != fseNoError){
 			fail = true;
-		if (errno != 0)
+			goto test2_cleanup;
+		}
+		if (errno != 0){
 			fail = true;
+			goto test2_cleanup;
+		}
 
 		reader = create_lineRead(file);
 	}
 
-
-	puts("hi open");
 
 	/* read first line */
 	{
@@ -255,29 +252,30 @@ void test2(){ /* TEST 2 */
 		errno = 0;
 		tmp = read_line(reader,0);
 
-		if (errno != 0)
+		if (errno != 0 || tmp = NULL) {
 			fail = true;
+			goto test2_cleanup;
+		}
 
-		if (strcmp(tmp,sExpected) != 0)
+		if (strcmp(tmp,sExpected) != 0) {
 			fail = true;
+			goto test2_cleanup;
+		}
 
 
-		puts("hi 0");
+
+	test2_cleanup:
 
 		free(tmp); tmp = NULL;
 
-		puts("hi 1");
-
-		if (close_file(reader->file,false) != fseNoError)
+		if (close_file(reader->file,false) != fseNoError){
 			fail = true;
+			goto test2_cleanup;
+		}
 		reader->file = NULL;
-
-		puts("hi 2");
 
 		free(reader); reader = NULL;
 
-
-		puts("hi 3 - done");
 
 		set_log_file();
 
@@ -301,7 +299,6 @@ int main(){
 
 	test0();
 	test1();
-	puts("hi test2");
 	test2();
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS);

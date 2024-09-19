@@ -1,1 +1,1 @@
-make tests
+when getting file atribs, check that the file actually exists

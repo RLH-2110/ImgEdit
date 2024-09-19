@@ -1,10 +1,12 @@
 
 CC=gcc
-CFILES= *.c argParse/*.c comp/fs/*.c comp/string/*.c
-CHEADERS = *.h argParse/*.h comp/fs/*.h comp/string/*.h
-CCFLAGS = -pedantic 
+CFILES= *.c argParse/*.c comp/fs/*.c 
+CHEADERS = *.h argParse/*.h comp/fs/*.h
+CCFLAGS = -ansi -pedantic
 OUTPUT = imgEdit
 
+TESTER_OUTPUT = test/test.exe
+TEST_CFILES= argParse/*.c comp/fs/*.c test/*.c str.c setup.c
 
 ifeq ($(OS),Windows_NT)
     CCFLAGS += -D OS_WINDOWS
@@ -26,10 +28,10 @@ endif
 
 
 make: $(CFILES) $(CHEADERS)
-	$(CC) -ansi -o $(OUTPUT) $(CFILES) $(CCFLAGS) 
+	$(CC) -o $(OUTPUT) $(CFILES) $(CCFLAGS) 
 
 
-.PHONY : clean
+.PHONY : clean test
 clean:
 	
 ifeq ($(OS),Windows_NT)
@@ -37,3 +39,8 @@ ifeq ($(OS),Windows_NT)
 else
 	rm $(OUTPUT)
 endif
+
+test:
+	$(CC) -o $(OUTPUT) $(CFILES) $(CCFLAGS)
+	$(CC) -o $(TESTER_OUTPUT) $(TEST_CFILES) $(CCFLAGS) -D testing
+	./$(TESTER_OUTPUT)

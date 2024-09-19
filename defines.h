@@ -3,12 +3,10 @@
 
 #include <stdio.h>
 
-/* /##################\ */
+/* /#################\ */
 /*|MAIN.C GLOBAL STUFF|*/
-/* \##################/ */
-extern FILE *logOut;
-
-void errorExit(int status);
+/* \#################/ */
+#include "setup.h"
 
 /* /###########\ */
 /*|VERSION STUFF|*/
@@ -31,9 +29,17 @@ C = Custom Selection (If compiled with certain functions turned off, For example
 #endif
 
 
-/* /#####\ */
-/*|VARIOUS|*/
-/* \#####/ */
+/* /###\ */
+/*|Notes|*/
+/* \###/ */
+
+#define CALLER_FREES /* The caller frees that poinnter*/
+#define FUNCTION_FREES /* the callee frees that pointer*/
+
+
+/* /##\ */
+/*|Util|*/
+/* \##/ */
 #ifndef NULL
 #define NULL 0
 #endif
@@ -42,6 +48,17 @@ C = Custom Selection (If compiled with certain functions turned off, For example
 typedef short bool;
 #endif
 
+#ifndef true
+#define true 1
+#define false 0
+#endif
+
+
+/*/#####\*/
+/*|sizes|*/
+/*\#####/*/
+
+#define TEXT_READ_BUFF_SIZE 100 /* CANT BE SMALLER THAN 2! NOTE: this number is ment to be 1 bigger than needed! */
 
 /*/#####\*/
 /*|FLAGS|*/
@@ -54,7 +71,18 @@ typedef short bool;
 /* /#########\ */
 /*|ERROR TYPES|*/
 /* \#########/ */
-typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile} fsError; 
+typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile, fseNoRead, fseNoWrite, fseMemory, fseLogic} fsError; 
+
+/* /###\ */
+/*|Enums|*/
+/* \###/ */
+typedef enum {	
+	fsfInvalid		= 0x00,
+	fsfReadAccess 	= 0x01,
+	fsfWriteAccess 	= 0x02,
+	fsfIsDirectory	= 0x04
+} fsFlags; 
+
 
 #endif
 

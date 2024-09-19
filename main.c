@@ -8,27 +8,27 @@
 #include "argParse/args.h"
 #include "compat.h"
 #include "comp/fs/fs.h"
-#include "comp/string/str.h"
+#include "str.h"
 
-FILE *logOut;
-void setLogFile();
+#include "setup.h"
 
+#ifndef testing
 
 int main(int argc, char* argv[]){
 	char* str;
 	int i;
 
-	logOut = stdout; /* log in the Terminal*/
+	setup();
 
 	get_args(argc, argv);
 
 	if (logFile != NULL)
-		setLogFile();
+		set_log_file();
 
 
 	fprintf(logOut,"%s version %sR%c %s\n",argv[0],VERSION,GRAPHICS_CHR,OS_STRING);
 
-	
+
 
 	fprintf(logOut,"(debug) argument flag variable (hex): %x\n",argumentFlags);
 
@@ -52,18 +52,19 @@ int main(int argc, char* argv[]){
 
 		for (i = 0;i < inputFilesC && str != NULL;i++){
 			fprintf(logOut,"(debug) Adding %s \n",inputFiles[i]);
-			strcat_c(&str,inputFiles[i]);
-			strcat_c(&str," ");
+			str = strcat_c(str,inputFiles[i]);
+			str = strcat_c(str," ");
 		}
 
 		if (str == NULL){
 			fputs("Main.c OUT OF MEMORY!",logOut);
-			errorExit(1);
+			error_exit(1);
 		}
 
 
 		fprintf(logOut,"(debug) writing %s in %s\n",str,outputFile);
 		write_file(outputFile,str,strlen(str));
+		free(str);
 	}
 
 
@@ -71,22 +72,7 @@ int main(int argc, char* argv[]){
 	return 0;
 }
 
+/* testing */
+#endif
 
-void setLogFile(){
-
-	FILE *tmp;
-
-	if (create_file(logFile, &tmp) == fseNoError){
-		logOut = tmp;
-		fprintf(logOut,"set log file to: %s\n",logFile);
-	}else{
-		fprintf(logOut,"error setting log file to: %s\n",logFile);
-	}
-	
-}
-
-
-void errorExit(int status){
-	close_log_file();
-	exit(status);
-}
+typedef int make_iso_compiler_happy;

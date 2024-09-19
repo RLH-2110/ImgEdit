@@ -1,6 +1,9 @@
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../defines.h"
+#include "../setup.h"
+
 #include "flags.h"
 
 
@@ -15,7 +18,7 @@ void append_arg(char *arg, char ***list, int *listC){
 
 	if (!arg || !list){ /* if one param is NULL */
 		fputs("ERROR: append_arg does not take NULL!\n",logOut);
-		errorExit(1);
+		error_exit(1);
 	} 
 
 
@@ -25,20 +28,25 @@ void append_arg(char *arg, char ***list, int *listC){
 		*list = malloc(sizeof(char*));
 		if (*list == NULL){
 			fputs("ERROR: append_arg is out of memory!\n",logOut);
-			errorExit(1);
+			error_exit(1);
 		}
 
 		*listC = 1;
 		*list[0] = arg; /* set the first element in the list to the argument pointer */	
 	}else{
 		*listC = *listC + 1;
+		if (*listC == 0){
+			/* If we got here, then that means there are so many parameters that we had an overflow. That sucks.*/
+			fputs("ERROR: too many arguments for a flag! We had an overflow, what the fuck did you do to cause this?\n",logOut);
+			error_exit(1);
+		}
 
 		*list = realloc(*list,*listC * sizeof(char*)); /* make space for one more pointer */
 
 
 		if (*list == NULL){
 			fputs("ERROR: append_arg is out of memory (realloc)!\n",logOut);
-			errorExit(1);
+			error_exit(1);
 		}
 
 
@@ -72,7 +80,7 @@ void get_args(int argc, char*argv[]){
 				if (fetch_flag_arg_count(argc,argv,argI+1) != 1){
 					fputs("Error: flag -l takes one argument!\n",logOut);
 					print_help(argv[0]);
-					errorExit(1);
+					error_exit(1);
 				}
 
 				logFile = argv[argI+1];
@@ -85,7 +93,7 @@ void get_args(int argc, char*argv[]){
 				if (fetch_flag_arg_count(argc,argv,argI+1) != 1){
 					fputs("Error: flag -o takes one argument!\n",logOut);
 					print_help(argv[0]);
-					errorExit(1);
+					error_exit(1);
 				}
 
 				outputFile = argv[argI+1];
@@ -100,7 +108,7 @@ void get_args(int argc, char*argv[]){
 				if (result < 1){
 					fputs("Error: flag -i needs at least one argument!\n",logOut);
 					print_help(argv[0]);
-					errorExit(1);
+					error_exit(1);
 				}
 
 				for (i = 1;i <= result; i++){ /* starts at 1, becuase argI + 0 == -i */
@@ -117,7 +125,7 @@ void get_args(int argc, char*argv[]){
 			default:
 				printf("Error: unrecognized parameter: %s\n",argv[argI]);
 				print_help(argv[0]);
-				errorExit(1);
+				error_exit(1);
 				
 		}
 	}

@@ -12,9 +12,11 @@
 /*  \########/  */
 
 
-
+/*
+/*  THIS FUNCTION DOES NOT WORK! IDK WHY SO I JUST REVERT TO THE OLD ONE!
+/*
 /* creates a file and checks for write access, then closes the file*/
-fsError create_file(const char* filePath, FILE **out_file){
+/*fsError create_file(const char* filePath, FILE **out_file){
 	
 	int result;
 	int flags;
@@ -25,7 +27,7 @@ fsError create_file(const char* filePath, FILE **out_file){
 	}
 
 	/* Create file */
-
+/*
 	errno = 0;
 	*out_file = fopen(filePath,"w");
 
@@ -36,7 +38,7 @@ fsError create_file(const char* filePath, FILE **out_file){
 
 
 	/* Close file*/
-
+/*
 	errno = 0;
 	if (fclose(*out_file) != 0){
 		fprintf(logOut,"Error: create_file close error. errno: %d\n",errno);
@@ -45,7 +47,7 @@ fsError create_file(const char* filePath, FILE **out_file){
 
 
 	/* Get flags and filter out flags that wont work for us*/
-	flags = getAttributes(filePath);
+/*	flags = getAttributes(filePath);
 
 	if (flags & fsfReadAccess == 0){
 		fprintf(logOut,"Error: create_file has no read access to %s\n",filePath);
@@ -60,8 +62,60 @@ fsError create_file(const char* filePath, FILE **out_file){
 
 
 	return fseNoError;
-}
+}*/
 
+
+/*
+/* OLD ONE!
+/*
+/* creates a file and checks for write access */
+fsError create_file(const char* filePath, FILE **out_file){
+	
+	int result;
+
+
+/*   THIS DOES NOT EXIST ANYMORE! FIX IT LATER!
+/*
+	if (isDirectory(filePath)){
+		fputs("(debug) create_file error. File is a directory!\n",logOut);
+		return fseIsDirectory;
+	}
+*/
+
+	/* Create file and probe */
+
+	errno = 0;
+	*out_file = fopen(filePath,"w");
+
+	if (*out_file == NULL){
+		fprintf(logOut,"(debug) create_file open error. errno: %d\n",errno);
+		return fseNoOpen;
+	}
+
+	errno = 0;
+	if (fwrite("\r\n",1,2,*out_file) != 2){ /* write a newline into the file, to see if we have write access*/
+		fprintf(logOut,"(debug) create_file write access error. errno: %d\n",errno);
+		return fseWrongWrite;
+	}
+
+	/* Close file and reopen it, so the probed thing is gone */
+
+	errno = 0;
+	if (fclose(*out_file) != 0){
+		fprintf(logOut,"(debug) create_file close error. errno: %d\n",errno);
+		return fseNoClose;
+	}
+
+	errno = 0;
+	*out_file = fopen(filePath,"w");
+
+	if (*out_file == NULL){
+		fprintf(logOut,"(debug) create_file second open error. errno: %d\n",errno);
+		return fseNoOpen;
+	}
+
+	return fseNoError;
+}
 
 
 

@@ -106,6 +106,7 @@ void test0(){ /* TEST 0 */
 		tmp = strcat_c(tmp,sInputA);
 		tmp = strcat_c(tmp,sInputB);
 		tmp = strcat_c(tmp,sInputC);
+		tmp = strcat_c(tmp,NULL);
 
 		if (tmp == NULL)
 			critical_test_fail();

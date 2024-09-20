@@ -10,13 +10,19 @@
 	dest = pointer to destination string
 	src = source string 
 
-	*dest will be set to NULL or the new combined string.
+	returns the new pointer to the string, it is either NULL, the combinded string, or the old string (if src is null)
+
+	if src is null, dest is returned.
+	if dest is null, null is returned
 */
 char* strcat_c(char *dest, const char *src){
 	size_t destLen, srcLen, combinedLen;
 
-	if (!dest || !src) /* If dest or src are null*/
+	if (dest == NULL)
 		return NULL;
+	
+	if (src == NULL)
+		return dest;
 	
 
 	destLen = strlen(dest);

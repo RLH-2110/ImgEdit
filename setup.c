@@ -35,7 +35,7 @@ void error_exit(int status){
 	#ifdef testing
 	#include "test/tests.h"
 	failed++;
-	printf("\n#------------------#\nProgamm Terminated due to an error!\nPassed: %d/%d\nFailed: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS);
+	printf("\n#------------------#\nProgamm Terminated due to an error!\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
 	#endif
 
 	close_log_file();

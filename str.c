@@ -15,11 +15,9 @@
 char* strcat_c(char *dest, const char *src){
 	size_t destLen, srcLen, combinedLen;
 
-	if (!dest || !src){ /* If dest or src are null*/
-		fputs("ERROR: strcat_c does not take NULL!",logOut);
+	if (!dest || !src) /* If dest or src are null*/
 		return NULL;
-	}
-
+	
 
 	destLen = strlen(dest);
 	srcLen = strlen(src);

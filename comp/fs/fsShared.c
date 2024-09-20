@@ -27,7 +27,7 @@ fsError create_file(const char* filePath, FILE **out_file){
 	*out_file = fopen(filePath,"w");
 
 	if (*out_file == NULL){
-		fprintf(logOut,"(debug) create_file open error. errno: %d\n",errno);
+		fprintf(logOut,"Error: create_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}
 
@@ -68,7 +68,7 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 	FILE *file;
 
 	if (getAttributes(filePath) & fsfIsDirectory){
-		fputs("(debug) write_file error. File is a directory!\n",logOut);
+		fputs("Error: write_file error. File is a directory!\n",logOut);
 		return fseIsDirectory;
 	}
 
@@ -76,19 +76,19 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 	file = fopen(filePath,"w");
 
 	if (file == NULL){
-		fprintf(logOut,"(debug) write_file open error. errno: %d\n",errno);
+		fprintf(logOut,"Error: write_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}
 
 	errno = 0;
 	if (fwrite(buffer,1,bufferSize,file) != bufferSize){
-		fprintf(logOut,"(debug) write_file write error. errno: %d\n",errno);
+		fprintf(logOut,"Error: write_file write error. errno: %d\n",errno);
 		return fseWrongWrite;
 	}
 
 	errno = 0;
 	if (fclose(file) != 0){
-		fprintf(logOut,"(debug) write_file close error. errno: %d\n",errno);
+		fprintf(logOut,"Error: write_file close error. errno: %d\n",errno);
 		return fseNoClose;
 	}
 
@@ -140,7 +140,7 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	file = fopen(filePath,fileFlags);
 
 	if (file == NULL || errno != 0){
-		fprintf(logOut,"(debug) open_file open error. errno: %d\n",errno);
+		fprintf(logOut,"Error: open_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}
 	
@@ -203,7 +203,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 
 	/* wait till we are in the correct line*/
 	for (;reader->currentLine < line;reader->currentLine++){
-		buff = fgets( buff, 2, reader->file ); /* read characters (first should NOT be NULL, second should be NULL*/
+		buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read characters (first should NOT be NULL, second should be NULL*/
 		if (feof(reader->file)){
 			fputs("Error: read_line function cant reach the specefied line, it does not exist!",logOut);
 			errno = ESPIPE; /* ESPIPE  = Illegal seek */

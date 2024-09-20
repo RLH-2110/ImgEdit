@@ -3,8 +3,23 @@
 
 #include "../../defines.h"
 #include <sys/stat.h>
+#include <unistd.h>
 
+fsError make_dir(const char* path) {
+	if (mkdir(path, 0755) == 0)
+		return fseNoError;
+	else
+		return fseNoCreate;
 
+}
+
+fsError remove_dir(const char* path) {
+	if (rmdir(path) == 0)
+		return fseNoError;
+	else
+		return fseNoDelete;
+
+}
 
 fsFlags getAttributes(const char *path){
    int flags;
@@ -17,7 +32,7 @@ fsFlags getAttributes(const char *path){
 
    /* set the flags */
    if (S_ISDIR(statbuf.st_mode))
-      flags += fsfIsDirectory;
+      return fsfIsDirectory;
 
    if (statbuf.st_mode & S_IWUSR)
       flags += fsfWriteAccess;

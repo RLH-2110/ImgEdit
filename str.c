@@ -13,7 +13,7 @@
 	*dest will be set to NULL or the new combined string.
 */
 char* strcat_c(char *dest, const char *src){
-	int destLen, srcLen, combinedLen;
+	size_t destLen, srcLen, combinedLen;
 
 	if (!dest || !src){ /* If dest or src are null*/
 		fputs("ERROR: strcat_c does not take NULL!",logOut);

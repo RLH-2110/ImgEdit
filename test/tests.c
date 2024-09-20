@@ -229,6 +229,7 @@ void test2(){ /* TEST 2 */
 
 	fputs("testing create_file function... ",stdout);
 
+
 	remove("log.txt");
 	if (getAttributes("log.txt") != 0) {
 		puts("test can't commence!");
@@ -236,7 +237,14 @@ void test2(){ /* TEST 2 */
 	}
 	
 
-	create_file("log.txt",&file);
+	if (create_file("log.txt", &file) != fseNoError) {
+		TODO
+	}
+
+	if (close_file(file, false) != fseNoError) {
+		TODO
+	}
+	
 
 	/* chceck if file exists here */
 
@@ -260,7 +268,10 @@ void test3(){ /* TEST 3 */
 
 	fputs("testing file logging... ",stdout);
 
+	printf("\nfile stuff: %d\n", getAttributes("log.txt"));
 	remove("log.txt");
+	printf("file stuff ad: %d\n", getAttributes("log.txt"));
+
 	if (getAttributes("log.txt") != 0) {
 		puts("test can't commence!");
 		return;

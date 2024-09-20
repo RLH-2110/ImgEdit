@@ -14,7 +14,6 @@
 /* creates a file and checks for write access */
 fsError create_file(const char* filePath, FILE **out_file){
 	
-	int result;
 	int flags;
 
 	/* Create file */
@@ -35,12 +34,12 @@ fsError create_file(const char* filePath, FILE **out_file){
 	flags = getAttributes(filePath);
 
 
-	if (flags & fsfReadAccess == 0){
+	if ((flags & fsfReadAccess) == 0){
 		fprintf(logOut,"Error: create_file has no read access to %s\n",filePath);
 		return fseNoRead;
 	}
 
-	if (flags & fsfWriteAccess == 0){
+	if ((flags & fsfWriteAccess) == 0){
 		fprintf(logOut,"Error: create_file has no write access to %s\n",filePath);
 		return fseNoWrite;
 	}
@@ -67,7 +66,6 @@ fsError create_file(const char* filePath, FILE **out_file){
 fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 	
 	FILE *file;
-	int result;
 
 	if (getAttributes(filePath) & fsfIsDirectory){
 		fputs("(debug) write_file error. File is a directory!\n",logOut);
@@ -112,8 +110,6 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 
 	FILE *file;
-	int result;
-	char* buff;
 	int flags;
 
 	
@@ -125,12 +121,12 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	/* Get flags and filter out flags that wont work for us*/
 	flags = getAttributes(filePath);
 
-	if (flags & fsfReadAccess == 0 && fileFlags[0] == 'r'){
+	if ((flags & fsfReadAccess) == 0 && fileFlags[0] == 'r'){
 		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
 		return fseNoRead;
 	}
 
-	if (flags & fsfWriteAccess == 0 && fileFlags[0] == 'w'){
+	if ((flags & fsfWriteAccess) == 0 && fileFlags[0] == 'w'){
 		fprintf(logOut,"Error: open_file has no write access to %s\n",filePath);
 		return fseNoWrite;
 	}

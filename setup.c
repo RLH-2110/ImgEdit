@@ -7,9 +7,6 @@
 FILE *logOut;
 
 void setup(){
-	char* str;
-	int i;
-
 	logOut = stdout; /* log in the Terminal*/
 }
 

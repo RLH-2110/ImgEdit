@@ -29,6 +29,12 @@ C = Custom Selection (If compiled with certain functions turned off, For example
 #endif
 
 
+/* /######\ */
+/*|Settings|*/
+/* \######/ */
+
+
+
 /* /###\ */
 /*|Notes|*/
 /* \###/ */

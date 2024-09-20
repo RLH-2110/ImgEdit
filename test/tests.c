@@ -30,6 +30,7 @@
 
 int failed;
 int passed;
+int skipped;
 
 int i;
 
@@ -53,7 +54,7 @@ void oom(){
 
 void critical_test_fail(){
 	failed++;
-	printf("\nTest Failed!\nCritial Test failed! We cant test anything else with this failure!\nPassed: %d\nFailed: %d\n",passed,failed);
+	printf("\nTest Failed!\nCritial Test failed! We cant test anything else with this failure!\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
 	close_log_file();
 	exit(1);
 }
@@ -113,6 +114,13 @@ void test0(){ /* TEST 0 */
 			critical_test_fail();
 
 		free(tmp); tmp = NULL;
+
+		/* tmp is NULL, test it!*/
+
+		tmp = strcat_c(tmp, sInputA);
+		if (tmp != NULL)
+			critical_test_fail();
+
 
 		puts(" passed!");
 		passed++;
@@ -221,10 +229,40 @@ void test1(){ /* TEST 1 */
 
 
 
+void test2() /* TEST 2 */ {
+	fail = false;
+	fputs("testing getAttributes and mkdir/rmdir functions... ", stdout);
+
+	remove("out.txt");
+	if (getAttributes("out.txt") != 0)
+		fail = true;
+
+	write_file("out.txt", "hi", 3);
+	if (getAttributes("out.txt") != (fsfReadAccess | fsfWriteAccess))
+		fail = true;
+	remove("out.txt");
+	
+	make_dir("out.txt");
+	if (getAttributes("out.txt") != fsfIsDirectory)
+		fail = true;
+	remove_dir("out.txt");
+
+	if (getAttributes("out.txt") != 0)
+		fail = true;
 
 
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else {
+		puts("failed!");
+		failed++;
+	}
+}
 
-void test2(){ /* TEST 2 */
+
+void test3(){ /* TEST 3 */
 	fail = false;
 
 	fputs("testing create_file function... ",stdout);
@@ -232,18 +270,19 @@ void test2(){ /* TEST 2 */
 
 	remove("log.txt");
 	if (getAttributes("log.txt") != 0) {
+		skipped++;
 		puts("test can't commence!");
 		return;
 	}
 	
 
-	if (create_file("log.txt", &file) != fseNoError) {
-		TODO
-	}
+	if (create_file("log.txt", &file) != fseNoError) 
+		fail = true;
+	
 
-	if (close_file(file, false) != fseNoError) {
-		TODO
-	}
+	if (close_file(file, false) != fseNoError) 
+		fail = true;
+	
 	
 
 	/* chceck if file exists here */
@@ -263,16 +302,15 @@ void test2(){ /* TEST 2 */
 }
 
 
-void test3(){ /* TEST 3 */
+void test4(){ /* TEST 4 */
 	fail = false;
 
 	fputs("testing file logging... ",stdout);
 
-	printf("\nfile stuff: %d\n", getAttributes("log.txt"));
 	remove("log.txt");
-	printf("file stuff ad: %d\n", getAttributes("log.txt"));
 
 	if (getAttributes("log.txt") != 0) {
+		skipped++;
 		puts("test can't commence!");
 		return;
 	}
@@ -282,7 +320,7 @@ void test3(){ /* TEST 3 */
 		failed++;
 		return;
 	}
-	fputs("Logging test!",logOut);
+	fputs("Logging test!\n",logOut);
 	if (close_log_file() == fseNoClose){
 		failed++;
 		return;
@@ -295,36 +333,36 @@ void test3(){ /* TEST 3 */
 		errno = 0;
 		if (open_file("log.txt","r",&file) != fseNoError){
 			fail = true;
-			goto test3_cleanup;
+			goto test4_cleanup;
 		}
 		if (errno != 0){
 			fail = true;
-			goto test3_cleanup;
+			goto test4_cleanup;
 		}
 
 		reader = create_lineRead(file);
 	}
 
 
-	/* read first line */
+	/* read second line (first one should be "set log file to: log.txt\n") */
 	{
-		sExpected = "Logging test!";
+		sExpected = "Logging test!\n";
 		errno = 0;
-		tmp = read_line(reader,0);
+		tmp = read_line(reader,1);
 
 		if (errno != 0 || tmp == NULL) {
 			fail = true;
-			goto test3_cleanup;
+			goto test4_cleanup;
 		}
 
 		if (strcmp(tmp,sExpected) != 0) {
 			fail = true;
-			goto test3_cleanup;
+			goto test4_cleanup;
 		}
 
 
 
-	test3_cleanup:
+	test4_cleanup:
 
 		free(tmp); tmp = NULL;
 
@@ -349,6 +387,10 @@ void test3(){ /* TEST 3 */
 	}
 }
 
+void test5() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
+	puts("TODO: add more tests! like a test for argsparse");
+}
+
 int main(){
 
 	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
@@ -356,13 +398,16 @@ int main(){
 
 	failed = 0;
 	passed = 0;
+	skipped = 0;
 
 	test0();
 	test1();
 	test2();
 	test3();
+	test4();
+	test5();
 
-	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS);
+	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS,skipped,NUM_TESTS);
 	close_log_file();
 	return 0;
 }

@@ -9,6 +9,23 @@ https://digitalmars.com/rtl/dos.html
 https://digitalmars.com/rtl/dos2.html
 */
 
+fsError make_dir(const char* path) {
+	if (mkdir(path) == 0)
+		return fseNoError;
+	else
+		return fseNoCreate;
+
+}
+
+
+fsError remove_dir(const char* path) {
+	if (rmdir(path) == 0)
+		return fseNoError;
+	else
+		return fseNoDelete;
+
+}
+
 fsFlags getAttributes(const char *path){
 	int flags;
 	struct find_t fileinfo;
@@ -19,7 +36,7 @@ fsFlags getAttributes(const char *path){
 	if (_dos_findfirst(path,_A_SUBDIR | _A_NORMAL | _A_RDONLY,&fileinfo) == 0){ /* return 0 = found. we searched for the path as a directory*/
 		
 		if(fileinfo.attrib & _A_SUBDIR)
-			flags += fsfIsDirectory;
+			return fsfIsDirectory;
 		else{
 			if (fileinfo.attrib & _A_RDONLY == false) /* if its not readonly*/
 				flags += fsfWriteAccess;

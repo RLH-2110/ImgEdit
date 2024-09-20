@@ -3,7 +3,24 @@
 
 #include "../../defines.h"
 #include <fileapi.h>
+#include <direct.h> 
 
+fsError make_dir(const char* path) {
+	if (_mkdir(path) == 0)
+		return fseNoError;
+	else 
+		return fseNoCreate;
+	
+}
+
+
+fsError remove_dir(const char* path) {
+	if (_rmdir(path) == 0)
+		return fseNoError;
+	else
+		return fseNoDelete;
+	
+}
 
 fsFlags getAttributes(const char *path){
 	int flags;
@@ -16,7 +33,7 @@ fsFlags getAttributes(const char *path){
 
 	/* set the flags */
 	if (attributes & FILE_ATTRIBUTE_DIRECTORY)
-		flags += fsfIsDirectory;
+		return fsfIsDirectory;
 
 	if ((attributes & FILE_ATTRIBUTE_READONLY) == 0)
 		flags += fsfWriteAccess;

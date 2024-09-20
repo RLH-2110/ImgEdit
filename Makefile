@@ -39,6 +39,8 @@ ifeq ($(OS),Windows_NT)
 else
 	rm $(OUTPUT)
 endif
+	rm $(TESTER_OUTPUT)
+	rm log.txt out.txt 
 
 test:
 	$(CC) -o $(OUTPUT) $(CFILES) $(CCFLAGS)

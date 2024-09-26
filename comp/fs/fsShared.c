@@ -214,6 +214,9 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 			errno = EIO;
 			return NULL;
 		}
+		if (buff[TEXT_READ_BUFF_SIZE-2] != '\n'){
+			printf("IMPLEMENT THIS!");
+		}
 	}
 
 	/* We are in the correct line now !*/

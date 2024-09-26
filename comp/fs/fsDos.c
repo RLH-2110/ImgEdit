@@ -38,7 +38,7 @@ fsFlags getAttributes(const char *path){
 		if(fileinfo.attrib & _A_SUBDIR)
 			return fsfIsDirectory;
 		else{
-			if (fileinfo.attrib & _A_RDONLY == false) /* if its not readonly*/
+			/*if (fileinfo.attrib & _A_RDONLY == false) /* if its not readonly*/ /* this does not seem to work right. investigate it later*/
 				flags += fsfWriteAccess;
 			
 			flags += fsfReadAccess; 

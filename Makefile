@@ -1,12 +1,13 @@
 
 CC=gcc
-CFILES= *.c argParse/*.c comp/fs/*.c 
-CHEADERS = *.h argParse/*.h comp/fs/*.h
+CFILES= $(wildcard *.c) $(wildcard argParse/*.c) $(wildcard comp/fs/*.c) 
+CHEADERS = $(wildcard *.h) $(wildcard argParse/*.h) $(wildcard comp/fs/*.h)
 CCFLAGS = -ansi -pedantic
 OUTPUT = imgEdit
 
+TEST_CHEADERS = $(wildcard *.h) $(wildcard argParse/*.h) $(wildcard comp/fs/*.h) test/tests.h
 TESTER_OUTPUT = test/test.exe
-TEST_CFILES= argParse/*.c comp/fs/*.c test/*.c str.c setup.c
+TEST_CFILES= $(wildcard argParse/*.c) $(wildcard comp/fs/*.c) $(wildcard test/*.c) str.c setup.c
 
 ifeq ($(OS),Windows_NT)
     CCFLAGS += -D OS_WINDOWS
@@ -27,9 +28,8 @@ $(info    detected Haiku)
 endif
 
 
-make: $(CFILES) $(CHEADERS)
+$(OUTPUT): $(CFILES) $(CHEADERS)
 	$(CC) -o $(OUTPUT) $(CFILES) $(CCFLAGS) 
-
 
 .PHONY : clean test
 clean:

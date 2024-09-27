@@ -1,14 +1,16 @@
 
 CC=gcc
+CCFLAGS = -ansi -pedantic
+
+OUTPUT = imgEdit
 CFILES= $(wildcard *.c) $(wildcard argParse/*.c) $(wildcard comp/fs/*.c) 
 CHEADERS = $(wildcard *.h) $(wildcard argParse/*.h) $(wildcard comp/fs/*.h)
-CCFLAGS = -ansi -pedantic
-OUTPUT = imgEdit
 
-TEST_CHEADERS = $(wildcard *.h) $(wildcard argParse/*.h) $(wildcard comp/fs/*.h) test/tests.h
 TESTER_OUTPUT = test/test.exe
-TEST_CFILES= $(wildcard argParse/*.c) $(wildcard comp/fs/*.c) $(wildcard test/*.c) str.c setup.c
+TEST_CFILES := $(CFILES) test/tests.c
+TEST_CHEADERS = $(CHEADERS) test/tests.h
 
+# OS FLAGS
 ifeq ($(OS),Windows_NT)
     CCFLAGS += -D OS_WINDOWS
 $(info    detected windows)
@@ -28,10 +30,18 @@ $(info    detected Haiku)
 endif
 
 
+# rules
+
 $(OUTPUT): $(CFILES) $(CHEADERS)
 	$(CC) -o $(OUTPUT) $(CFILES) $(CCFLAGS) 
-
-.PHONY : clean test
+	
+test: $(OUTPUT)
+	$(CC) -o $(TESTER_OUTPUT) $(TEST_CFILES) $(CCFLAGS) -D testing
+	./$(TESTER_OUTPUT)
+	
+	
+# clean
+clear: clean
 clean:
 	
 ifeq ($(OS),Windows_NT)
@@ -42,7 +52,6 @@ endif
 	rm $(TESTER_OUTPUT)
 	rm log.txt out.txt 
 
-test:
-	$(CC) -o $(OUTPUT) $(CFILES) $(CCFLAGS)
-	$(CC) -o $(TESTER_OUTPUT) $(TEST_CFILES) $(CCFLAGS) -D testing
-	./$(TESTER_OUTPUT)
+
+	
+.PHONY : clean clear test

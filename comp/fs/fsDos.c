@@ -3,6 +3,7 @@
 
 #include "../../defines.h"
 #include <dos.h>
+#include <stdio.h>
 
 /*
 https://digitalmars.com/rtl/dos.html 
@@ -34,11 +35,11 @@ fsFlags getAttributes(const char *path){
 
 	/* DOS check if file is directory*/
 	if (_dos_findfirst(path,_A_SUBDIR | _A_NORMAL | _A_RDONLY,&fileinfo) == 0){ /* return 0 = found. we searched for the path as a directory*/
-		
+			
 		if(fileinfo.attrib & _A_SUBDIR)
 			return fsfIsDirectory;
 		else{
-			/*if (fileinfo.attrib & _A_RDONLY == false) /* if its not readonly*/ /* this does not seem to work right. investigate it later*/
+			if ((fileinfo.attrib & _A_RDONLY) == 0) /* if its not readonly*/
 				flags += fsfWriteAccess;
 			
 			flags += fsfReadAccess; 

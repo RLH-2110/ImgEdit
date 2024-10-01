@@ -64,7 +64,7 @@ typedef short bool;
 /*|sizes|*/
 /*\#####/*/
 
-#define TEXT_READ_BUFF_SIZE 20 /* CANT BE SMALLER THAN 2! NOTE: this number is ment to be 1 bigger than needed! */
+#define TEXT_READ_BUFF_SIZE 100 /* CANT BE SMALLER THAN 2! NOTE: this number is ment to be 1 bigger than needed! */
 
 
 /*/#####\*/

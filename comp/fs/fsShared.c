@@ -211,9 +211,10 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 
 	/* wait till we are in the correct line*/
 	for (;reader->currentLine < line;reader->currentLine++){
+		buff[TEXT_READ_BUFF_SIZE - 2] = '\n'; /* set it to /n for a later test, it might get overwriten by \0 (good) or another char (bad)*/
 		buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read characters (first should NOT be NULL, second should be NULL*/
 		if (feof(reader->file)){
-			fputs("Error: read_line function cant reach the specefied line, it does not exist!",logOut);
+			fputs("Error: read_line function cant reach the specefied line, it does not exist", logOut);
 			errno = ESPIPE; /* ESPIPE  = Illegal seek */
 			return NULL;
 		}
@@ -222,14 +223,17 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 			errno = EIO;
 			return NULL;
 		}
-		if (buff[TEXT_READ_BUFF_SIZE-2] != '\n'){
-			/* we are not finished with this line, so we are not allowed to increment the line after the loop, so we decrement it here*/
+
+		if (buff[TEXT_READ_BUFF_SIZE - 2] != '\n' && buff[TEXT_READ_BUFF_SIZE - 2] != '\0') { /* if line was read (we already checked if its eof) and does not end in \n*/
+			/*if we are here, the buffer is too small to read the line. so we decrement the line, so it stays the same when we increment it during the loop. this allows us to go though the whole line*/
 			reader->currentLine--;
 		}
 	}
 
 	/* We are in the correct line now !*/
 
+	buff[TEXT_READ_BUFF_SIZE - 1] = 'a'; /* set to dectect if we cant fit the line*/
+	buff[TEXT_READ_BUFF_SIZE - 2] = '\n'; /* set it to /n for a later test, it might get overwriten by \0 (good) or another char (bad)*/
 	buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read line */
 	if (feof(reader->file) && buff == NULL){
 		fputs("Error: read_line function cant reach the specefied line, it does not exist!",logOut);
@@ -243,8 +247,10 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 		return NULL;
 	}
 
-	if (!feof(reader->file) && buff[TEXT_READ_BUFF_SIZE-2] != '\n'){ /* not the last line, and does not end with \n*/
+	if (buff[TEXT_READ_BUFF_SIZE-2] != '\n' && buff[TEXT_READ_BUFF_SIZE-2] != '\0' && !feof(reader->file)) { /* not the last line, and does not end with \n and its not the end of file*/
 		/* In this case our buffer is probably too small.*/
+		fprintf(logOut, "Error: read_line function can't read line %d! it does not fit in buffer of size %d!\n", reader->currentLine + 1, TEXT_READ_BUFF_SIZE);
+	
 		errno = ERANGE;
 		return NULL;
 	}

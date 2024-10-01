@@ -137,6 +137,8 @@ void test0(){ /* TEST 0 */
 void test1(){ /* TEST 1 */
 	fputs("testing file writing and reading... ",stdout);
 
+	fail = false;
+
 	remove("out.txt");
 	if (getAttributes("out.txt") != 0) {
 		puts("test can't commence!");
@@ -149,11 +151,7 @@ void test1(){ /* TEST 1 */
 	{
 		error =  write_file("out.txt", "Hello World\n12", 15);
 		if (error != fseNoError)
-			critical_test_fail();
-
-		if (close_file(file,false) != fseNoError)
-			critical_test_fail();
-		file = NULL;
+			goto test1_cleanup;
 	}
 
 	/* Opens the file and prepares the reader*/
@@ -161,9 +159,9 @@ void test1(){ /* TEST 1 */
 	{
 		errno = 0;
 		if (open_file("out.txt","r",&file) != fseNoError)
-			critical_test_fail();
+			goto test1_cleanup;
 		if (errno != 0)
-			critical_test_fail();
+			goto test1_cleanup;
 
 		reader = create_lineRead(file);
 	}
@@ -175,11 +173,11 @@ void test1(){ /* TEST 1 */
 		errno = 0;
 		tmp = read_line(reader,0);
 
-		if (errno != 0)
-			critical_test_fail();
+		if (errno != 0 || tmp == NULL)
+			goto test1_cleanup;
 
 		if (strcmp(tmp,sExpected) != 0)
-			critical_test_fail();
+			goto test1_cleanup;
 
 		free(tmp); tmp = NULL;
 
@@ -191,11 +189,11 @@ void test1(){ /* TEST 1 */
 		errno = 0;
 		tmp = read_line(reader, 1);
 
-		if (errno != 0)
-			critical_test_fail();
+		if (errno != 0 || tmp == NULL)
+			goto test1_cleanup;
 
 		if (strcmp(tmp,sExpected) != 0)
-			critical_test_fail();
+			goto test1_cleanup;
 
 		free(tmp); tmp = NULL;
 	}
@@ -208,24 +206,34 @@ void test1(){ /* TEST 1 */
 		errno = 0;
 		tmp = read_line(reader, 0);
 
-		if (errno != 0)
-			critical_test_fail();
+		if (errno != 0 || tmp == NULL)
+			goto test1_cleanup;
 
 		if (strcmp(tmp,sExpected) != 0)
-			critical_test_fail();
+			goto test1_cleanup;
 
 		free(tmp); tmp = NULL;
 	}
 
+	goto test1_noFail;
+test1_cleanup:
+	fail = true;
+test1_noFail:
+
 	if (reader != NULL)
-		if (close_file(reader->file,false) != fseNoError)
-			critical_test_fail();
+		if (close_file(reader->file, false) != fseNoError)
+			fail = true;
 	reader->file = NULL;
 
 	free(reader); reader = NULL;
 
-	puts("passed!");
-	passed++;
+
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else 
+		critical_test_fail();
 }
 
 
@@ -283,7 +291,7 @@ void test3(){ /* TEST 3 */
 
 	if (close_file(file, false) != fseNoError) 
 		fail = true;
-	
+	file = NULL;
 	
 
 	/* chceck if file exists here */
@@ -375,7 +383,6 @@ void test4(){ /* TEST 4 */
 
 		free(reader); reader = NULL;
 
-
 		set_log_file();
 
 		if (!fail){
@@ -388,70 +395,122 @@ void test4(){ /* TEST 4 */
 	}
 }
 
-void test5() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
-	puts("TODO: add more tests! like a test for argsparse");
-
-
-
-	fputs("testing file writing and reading... ",stdout);
+void test5() { 
+	fputs("testing file writing and reading with buffers bigger than TEXT_READ_BUFF_SIZE... ",stdout);
+	fail = false;
 
 	remove("out.txt");
 	if (getAttributes("out.txt") != 0) {
 		puts("test can't commence!");
-		critical_test_fail();
+		skipped++;
 		return;
 	}
+
+	
+	sInputA = malloc((TEXT_READ_BUFF_SIZE + 1)*2+5);
+	if (sInputA == NULL)
+		oom();
+
+
+	/* part one: set the first long line of sInputA*/
+	for (i = 0; i < TEXT_READ_BUFF_SIZE - 2; i++)
+		sInputA[i] = 'A';
+	sInputA[TEXT_READ_BUFF_SIZE - 2] = 'B';
+	sInputA[TEXT_READ_BUFF_SIZE - 1] = '\n';
+
+	/* part 2 set second line */
+
+	sInputA[TEXT_READ_BUFF_SIZE+0] = '1';
+	sInputA[TEXT_READ_BUFF_SIZE+1] = '2';
+	sInputA[TEXT_READ_BUFF_SIZE+2] = '\n';
+
+
+	/* part 3 set last long line */
+	for (i = TEXT_READ_BUFF_SIZE + 3; i < (TEXT_READ_BUFF_SIZE + 3) + TEXT_READ_BUFF_SIZE - 2; i++)
+		sInputA[i] = 'A';
+	sInputA[(TEXT_READ_BUFF_SIZE + 3) + TEXT_READ_BUFF_SIZE - 2] = 'B';
+	sInputA[(TEXT_READ_BUFF_SIZE + 3) + TEXT_READ_BUFF_SIZE - 1] = '\0';
+
+
 
 	error = fseNoError;
 	/* creating and writing the file*/
 	{
-		error =  write_file("out.txt", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC\n12", 15);
+		error =  write_file("out.txt", sInputA, strlen(sInputA)+1);
 		if (error != fseNoError)
-			critical_test_fail();
-
-		if (close_file(file,false) != fseNoError)
-			critical_test_fail();
-		file = NULL;
+			goto test5_cleanup;
 	}
 
 	/* Opens the file and prepares the reader*/
 
 	{
 		errno = 0;
-		if (open_file("out.txt","r",&file) != fseNoError)
-			critical_test_fail();
-		if (errno != 0)
-			critical_test_fail();
+		if (open_file("out.txt", "r", &file) != fseNoError) 
+			goto test5_cleanup;
+
+		if (errno != 0) 
+			goto test5_cleanup;
 
 		reader = create_lineRead(file);
 	}
 
 
 
-	/* read second/last line */
+	/* read second line */
 	{
-		sExpected = "12";
+		sExpected = "12\n";
 		errno = 0;
 		tmp = read_line(reader, 1);
 
-		if (errno != 0)
-			critical_test_fail();
+		if (tmp == NULL || errno != 0)
+			goto test5_cleanup;
 
 		if (strcmp(tmp,sExpected) != 0)
-			critical_test_fail();
+			goto test5_cleanup;
 
 		free(tmp); tmp = NULL;
 	}
 
+	/* read last line */
+	{
+		fputs("we expect an buffer error in line 3\n", logOut);
+		errno = 0;
+		tmp = read_line(reader, 2);
+
+		if (errno != ERANGE)
+			goto test5_cleanup;
+
+		free(tmp); tmp = NULL;
+	}
+
+	goto test5_noFail;
+test5_cleanup:
+	fail = true;
+test5_noFail:
+
 	if (reader != NULL)
-		if (close_file(reader->file,false) != fseNoError)
-			critical_test_fail();
+		if (close_file(reader->file, false) != fseNoError)
+			fail = true;
+	
 	reader->file = NULL;
 
 	free(reader); reader = NULL;
+	free(sInputA); sInputA = NULL;
 
-	puts("passed!");
-	passed++;
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else {
+		puts("failed!");
+		failed++;
+	}
+
+
+}
+
+void test6() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
+	puts("TODO: add more tests! like a test for argsparse");
 
 
 }
@@ -471,6 +530,7 @@ int main(){
 	test3();
 	test4();
 	test5();
+	test6();
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS,skipped,NUM_TESTS);
 	close_log_file();

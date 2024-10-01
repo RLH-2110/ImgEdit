@@ -169,7 +169,14 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 
 	returns: char pointer to the line. YOU HAVE TO FREE IT!
 
-	errnos: EINVAL, EIO, ENOMEM, ESPIPE
+	errnos: EINVAL, EIO, ENOMEM, ESPIPE, ERANGE
+
+	ERANGE 	is set when the buffer is too small to fit the line
+	ENOMEM 	is set when there is no memory
+	EINVAL 	is set when there is an invalid lineRead
+	EIO 	is set on an IO error
+	ESPIPE	is set when the line you tried to read it past the end of file
+
 */
 CALLER_FREES char* read_line(lineRead *reader, long line){
 	char *buff;
@@ -215,7 +222,8 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 			return NULL;
 		}
 		if (buff[TEXT_READ_BUFF_SIZE-2] != '\n'){
-			printf("IMPLEMENT THIS!");
+			/* we are not finished with this line, so we are not allowed to increment the line after the loop, so we decrement it here*/
+			reader->currentLine--;
 		}
 	}
 
@@ -231,6 +239,12 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 		fputs("Error: read_line function had an IO error!",logOut);
 		printf("\n\t\terrno: %d\n",errno); /* errno 9 */
 		errno = EIO;
+		return NULL;
+	}
+
+	if (!feof(reader->file) && buff[TEXT_READ_BUFF_SIZE-2] != '\n'){ /* not the last line, and does not end with \n*/
+		/* In this case our buffer is probably too small.*/
+		errno = ERANGE;
 		return NULL;
 	}
 

@@ -390,6 +390,68 @@ void test4(){ /* TEST 4 */
 
 void test5() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
 	puts("TODO: add more tests! like a test for argsparse");
+
+
+	fputs("testing file writing and reading... ",stdout);
+
+	remove("out.txt");
+	if (getAttributes("out.txt") != 0) {
+		puts("test can't commence!");
+		critical_test_fail();
+		return;
+	}
+
+	error = fseNoError;
+	/* creating and writing the file*/
+	{
+		error =  write_file("out.txt", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC\n12", 15);
+		if (error != fseNoError)
+			critical_test_fail();
+
+		if (close_file(file,false) != fseNoError)
+			critical_test_fail();
+		file = NULL;
+	}
+
+	/* Opens the file and prepares the reader*/
+
+	{
+		errno = 0;
+		if (open_file("out.txt","r",&file) != fseNoError)
+			critical_test_fail();
+		if (errno != 0)
+			critical_test_fail();
+
+		reader = create_lineRead(file);
+	}
+
+
+
+	/* read second/last line */
+	{
+		sExpected = "12";
+		errno = 0;
+		tmp = read_line(reader, 1);
+
+		if (errno != 0)
+			critical_test_fail();
+
+		if (strcmp(tmp,sExpected) != 0)
+			critical_test_fail();
+
+		free(tmp); tmp = NULL;
+	}
+
+	if (reader != NULL)
+		if (close_file(reader->file,false) != fseNoError)
+			critical_test_fail();
+	reader->file = NULL;
+
+	free(reader); reader = NULL;
+
+	puts("passed!");
+	passed++;
+
 }
 
 int main(){

@@ -14,7 +14,6 @@ void print_help(char* argv0); /* prints help screen */
    list = a pointer to a char** like inputFiles
    listC = pointer to the count of how many elements are in the list */
 void append_arg(char *arg, char ***list, int *listC){
-	int i;
 
 	if (!arg || !list){ /* if one param is NULL */
 		fputs("ERROR: append_arg does not take NULL!\n",logOut);
@@ -103,7 +102,7 @@ void get_args(int argc, char*argv[]){
 
 				argumentFlags += flags_i;
 
-				result; result = fetch_flag_arg_count(argc,argv,argI+1);
+				result = fetch_flag_arg_count(argc,argv,argI+1);
 
 				if (result < 1){
 					fputs("Error: flag -i needs at least one argument!\n",logOut);

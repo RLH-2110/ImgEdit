@@ -10,8 +10,17 @@ typedef struct lineRead{
 } lineRead;
 
 
+/* creates directory */
+fsError make_dir(const char* path);
+/* removes directory */
+fsError remove_dir(const char* path);
 
 /* gets file/directory flags */
+/*
+	If its a  directory ONLY fsfIsDirectory is set!
+	if it does not exist then fsfInvalid is set
+	if it is a file, then fsfReadAccess and or fsfWriteAccess are set
+*/
 fsFlags getAttributes(const char *path);
 
 /* creates a file and checks for write access, then closes the file*/

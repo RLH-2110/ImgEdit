@@ -11,23 +11,18 @@
 /* | Creating | */
 /*  \########/  */
 
-
-/*
-/*  THIS FUNCTION DOES NOT WORK! IDK WHY SO I JUST REVERT TO THE OLD ONE!
-/*
-/* creates a file and checks for write access, then closes the file*/
-/*fsError create_file(const char* filePath, FILE **out_file){
+/* creates a file and checks for write access */
+fsError create_file(const char* filePath, FILE **out_file){
 	
-	int result;
 	int flags;
 
+	/* Create file */
+
 	if (getAttributes(filePath) & fsfIsDirectory){
-		fputs("(debug) create_file error. File is a directory!\n",logOut);
+		fputs("error: create_file error. File is a directory!\n",logOut);
 		return fseIsDirectory;
 	}
 
-	/* Create file */
-/*
 	errno = 0;
 	*out_file = fopen(filePath,"w");
 
@@ -36,82 +31,17 @@
 		return fseNoOpen;
 	}
 
-
-	/* Close file*/
-/*
-	errno = 0;
-	if (fclose(*out_file) != 0){
-		fprintf(logOut,"Error: create_file close error. errno: %d\n",errno);
-		return fseNoClose;
-	}
+	flags = getAttributes(filePath);
 
 
-	/* Get flags and filter out flags that wont work for us*/
-/*	flags = getAttributes(filePath);
-
-	if (flags & fsfReadAccess == 0){
+	if ((flags & fsfReadAccess) == 0){
 		fprintf(logOut,"Error: create_file has no read access to %s\n",filePath);
 		return fseNoRead;
 	}
 
-	if (flags & fsfWriteAccess == 0){
+	if ((flags & fsfWriteAccess) == 0){
 		fprintf(logOut,"Error: create_file has no write access to %s\n",filePath);
 		return fseNoWrite;
-	}
-
-
-
-	return fseNoError;
-}*/
-
-
-/*
-/* OLD ONE!
-/*
-/* creates a file and checks for write access */
-fsError create_file(const char* filePath, FILE **out_file){
-	
-	int result;
-
-
-/*   THIS DOES NOT EXIST ANYMORE! FIX IT LATER!
-/*
-	if (isDirectory(filePath)){
-		fputs("(debug) create_file error. File is a directory!\n",logOut);
-		return fseIsDirectory;
-	}
-*/
-
-	/* Create file and probe */
-
-	errno = 0;
-	*out_file = fopen(filePath,"w");
-
-	if (*out_file == NULL){
-		fprintf(logOut,"(debug) create_file open error. errno: %d\n",errno);
-		return fseNoOpen;
-	}
-
-	errno = 0;
-	if (fwrite("\r\n",1,2,*out_file) != 2){ /* write a newline into the file, to see if we have write access*/
-		fprintf(logOut,"(debug) create_file write access error. errno: %d\n",errno);
-		return fseWrongWrite;
-	}
-
-	/* Close file and reopen it, so the probed thing is gone */
-
-	errno = 0;
-	if (fclose(*out_file) != 0){
-		fprintf(logOut,"(debug) create_file close error. errno: %d\n",errno);
-		return fseNoClose;
-	}
-
-	errno = 0;
-	*out_file = fopen(filePath,"w");
-
-	if (*out_file == NULL){
-		fprintf(logOut,"(debug) create_file second open error. errno: %d\n",errno);
-		return fseNoOpen;
 	}
 
 	return fseNoError;
@@ -136,10 +66,9 @@ fsError create_file(const char* filePath, FILE **out_file){
 fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 	
 	FILE *file;
-	int result;
 
 	if (getAttributes(filePath) & fsfIsDirectory){
-		fputs("(debug) write_file error. File is a directory!\n",logOut);
+		fputs("Error: write_file error. File is a directory!\n",logOut);
 		return fseIsDirectory;
 	}
 
@@ -147,19 +76,19 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 	file = fopen(filePath,"w");
 
 	if (file == NULL){
-		fprintf(logOut,"(debug) write_file open error. errno: %d\n",errno);
+		fprintf(logOut,"Error: write_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}
 
 	errno = 0;
 	if (fwrite(buffer,1,bufferSize,file) != bufferSize){
-		fprintf(logOut,"(debug) write_file write error. errno: %d\n",errno);
+		fprintf(logOut,"Error: write_file write error. errno: %d\n",errno);
 		return fseWrongWrite;
 	}
 
 	errno = 0;
 	if (fclose(file) != 0){
-		fprintf(logOut,"(debug) write_file close error. errno: %d\n",errno);
+		fprintf(logOut,"Error: write_file close error. errno: %d\n",errno);
 		return fseNoClose;
 	}
 
@@ -181,8 +110,6 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 
 	FILE *file;
-	int result;
-	char* buff;
 	int flags;
 
 	
@@ -194,12 +121,12 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	/* Get flags and filter out flags that wont work for us*/
 	flags = getAttributes(filePath);
 
-	if (flags & fsfReadAccess == 0 && fileFlags[0] == 'r'){
+	if ((flags & fsfReadAccess) == 0 && fileFlags[0] == 'r'){
 		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
 		return fseNoRead;
 	}
 
-	if (flags & fsfWriteAccess == 0 && fileFlags[0] == 'w'){
+	if ((flags & fsfWriteAccess) == 0 && fileFlags[0] == 'w'){
 		fprintf(logOut,"Error: open_file has no write access to %s\n",filePath);
 		return fseNoWrite;
 	}
@@ -213,7 +140,7 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	file = fopen(filePath,fileFlags);
 
 	if (file == NULL || errno != 0){
-		fprintf(logOut,"(debug) open_file open error. errno: %d\n",errno);
+		fprintf(logOut,"Error: open_file open error. errno: %d\n",errno);
 		return fseNoOpen;
 	}
 	
@@ -241,6 +168,14 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	line: the line you want to read (starts at 0)
 
 	returns: char pointer to the line. YOU HAVE TO FREE IT!
+
+	errnos: EINVAL, EIO, ENOMEM, ESPIPE, ERANGE
+
+	ERANGE 	is set when the buffer is too small to fit the line
+	ENOMEM 	is set when there is no memory
+	EINVAL 	is set when there is an invalid lineRead
+	EIO 	is set on an IO error
+	ESPIPE	is set when the line you tried to read it past the end of file
 
 	errnos: EINVAL, EIO, ENOMEM, ESPIPE
 */
@@ -276,9 +211,10 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 
 	/* wait till we are in the correct line*/
 	for (;reader->currentLine < line;reader->currentLine++){
-		buff = fgets( buff, 2, reader->file ); /* read characters (first should NOT be NULL, second should be NULL*/
+		buff[TEXT_READ_BUFF_SIZE - 2] = '\n'; /* set it to /n for a later test, it might get overwriten by \0 (good) or another char (bad)*/
+		buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read characters (first should NOT be NULL, second should be NULL*/
 		if (feof(reader->file)){
-			fputs("Error: read_line function cant reach the specefied line, it does not exist!",logOut);
+			fputs("Error: read_line function cant reach the specefied line, it does not exist", logOut);
 			errno = ESPIPE; /* ESPIPE  = Illegal seek */
 			return NULL;
 		}
@@ -287,10 +223,17 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 			errno = EIO;
 			return NULL;
 		}
+
+		if (buff[TEXT_READ_BUFF_SIZE - 2] != '\n' && buff[TEXT_READ_BUFF_SIZE - 2] != '\0') { /* if line was read (we already checked if its eof) and does not end in \n*/
+			/*if we are here, the buffer is too small to read the line. so we decrement the line, so it stays the same when we increment it during the loop. this allows us to go though the whole line*/
+			reader->currentLine--;
+		}
 	}
 
 	/* We are in the correct line now !*/
 
+	buff[TEXT_READ_BUFF_SIZE - 1] = 'a'; /* set to dectect if we cant fit the line*/
+	buff[TEXT_READ_BUFF_SIZE - 2] = '\n'; /* set it to /n for a later test, it might get overwriten by \0 (good) or another char (bad)*/
 	buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read line */
 	if (feof(reader->file) && buff == NULL){
 		fputs("Error: read_line function cant reach the specefied line, it does not exist!",logOut);
@@ -303,6 +246,15 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 		errno = EIO;
 		return NULL;
 	}
+
+	if (buff[TEXT_READ_BUFF_SIZE-2] != '\n' && buff[TEXT_READ_BUFF_SIZE-2] != '\0' && !feof(reader->file)) { /* not the last line, and does not end with \n and its not the end of file*/
+		/* In this case our buffer is probably too small.*/
+		fprintf(logOut, "Error: read_line function can't read line %d! it does not fit in buffer of size %d!\n", reader->currentLine + 1, TEXT_READ_BUFF_SIZE);
+	
+		errno = ERANGE;
+		return NULL;
+	}
+
 
 	reader->currentLine++;
 	return buff;

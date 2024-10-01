@@ -1,1 +1,1 @@
-when getting file atribs, check that the file actually exists
+make sure that in line_read we can skip to the next line, if the line is too big to fit in the buffer (ie, if the last char is not \n or the file end)

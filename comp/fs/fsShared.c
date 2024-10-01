@@ -177,6 +177,7 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	EIO 	is set on an IO error
 	ESPIPE	is set when the line you tried to read it past the end of file
 
+	errnos: EINVAL, EIO, ENOMEM, ESPIPE
 */
 CALLER_FREES char* read_line(lineRead *reader, long line){
 	char *buff;
@@ -247,6 +248,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 		errno = ERANGE;
 		return NULL;
 	}
+
 
 	reader->currentLine++;
 	return buff;

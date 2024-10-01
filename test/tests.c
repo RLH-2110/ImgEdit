@@ -392,6 +392,7 @@ void test5() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
 	puts("TODO: add more tests! like a test for argsparse");
 
 
+
 	fputs("testing file writing and reading... ",stdout);
 
 	remove("out.txt");
@@ -451,6 +452,7 @@ void test5() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
 
 	puts("passed!");
 	passed++;
+
 
 }
 

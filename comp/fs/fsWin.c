@@ -2,8 +2,9 @@
 #ifdef OS_WINDOWS
 
 #include "../../defines.h"
-#include <fileapi.h>
+/*#include <fileapi.h>*/
 #include <direct.h> 
+#include <windows.h>
 
 fsError make_dir(const char* path) {
 	if (_mkdir(path) == 0)
@@ -24,7 +25,7 @@ fsError remove_dir(const char* path) {
 
 fsFlags getAttributes(const char *path){
 	int flags;
-	DWORD attributes = GetFileAttributesA(path);
+	DWORD attributes = GetFileAttributes(path);
 
 	if (attributes == INVALID_FILE_ATTRIBUTES)
 		return fsfInvalid;

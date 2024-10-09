@@ -17,6 +17,7 @@
 int main(int argc, char* argv[]){
 	char* str;
 	int i;
+	FILE* outf;
 
 	setup();
 
@@ -63,7 +64,13 @@ int main(int argc, char* argv[]){
 
 
 		fprintf(logOut,"(debug) writing %s in %s\n",str,outputFile);
-		write_file(outputFile,str,strlen(str));
+		if (open_file(outputFile,"w",&outf) != fseNoError)
+			printf("could not create file!\n");
+		else{
+			write_file(outf,str,strlen(str),FS_CURR);
+			close_file(outf,true);
+		}
+
 		free(str);
 	}
 

@@ -9,19 +9,18 @@ FILE *scrOut;
 
 void setup(){
 	logOut = stdout; /* log in the Terminal*/
+	scrOut = stdout;
 }
 
 bool set_log_file(){
 
 	FILE *tmp;
 
-	scrOut = stdout;
-
 	if (logFile == NULL){
 		fputs("Error: set_log_file: logFile variable must not be NULL!",scrOut);
 	}
 
-	if (create_file(logFile, &tmp) == fseNoError){
+	if (open_file(logFile,"w", &tmp) == fseNoError){
 		logOut = tmp;
 		fprintf(logOut,"set log file to: %s\n",logFile);
 		return true;

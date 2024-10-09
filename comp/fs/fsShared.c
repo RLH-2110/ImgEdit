@@ -1,55 +1,12 @@
 #include "../../defines.h"
 #include "../../setup.h"
+#include "../../int.h"
+
 #include "fs.h" /* to get the isDirectory definition*/
 
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
-
-
-/*  /########\  */
-/* | Creating | */
-/*  \########/  */
-
-/* creates a file and checks for write access */
-fsError create_file(const char* filePath, FILE **out_file){
-	
-	int flags;
-
-	/* Create file */
-
-	if (getAttributes(filePath) & fsfIsDirectory){
-		fputs("error: create_file error. File is a directory!\n",logOut);
-		return fseIsDirectory;
-	}
-
-	errno = 0;
-	*out_file = fopen(filePath,"w");
-
-	if (*out_file == NULL){
-		fprintf(logOut,"Error: create_file open error. errno: %d\n",errno);
-		return fseNoOpen;
-	}
-
-	flags = getAttributes(filePath);
-
-
-	if ((flags & fsfReadAccess) == 0){
-		fprintf(logOut,"Error: create_file has no read access to %s\n",filePath);
-		return fseNoRead;
-	}
-
-	if ((flags & fsfWriteAccess) == 0){
-		fprintf(logOut,"Error: create_file has no write access to %s\n",filePath);
-		return fseNoWrite;
-	}
-
-	return fseNoError;
-}
-
-
-
-
 
 
 
@@ -59,40 +16,25 @@ fsError create_file(const char* filePath, FILE **out_file){
 
 
 
-
-
-/* 	Depricate and replace this.
-	its better to have a function that alows partial writes an option to seek around the file.
-
-	P.s. perhabs it will be keept for tests, but thats not sure yet.
+/* writes COUNT bytes from BUFFER and write them in FILE at LOCATION.
+	If LOCATION is FS_CURR (-1) then it writes at the current position. 
 */
-fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
+fsError write_file(FILE* file, const char* buffer, size_t count, uint32 location){
 	
-	FILE *file;
 
-	if (getAttributes(filePath) & fsfIsDirectory){
-		fputs("Error: write_file error. File is a directory!\n",logOut);
-		return fseIsDirectory;
-	}
+	if (file == NULL)
+		return fseNULLParam;
+	
 
-	errno = 0;
-	file = fopen(filePath,"w");
-
-	if (file == NULL){
-		fprintf(logOut,"Error: write_file open error. errno: %d\n",errno);
-		return fseNoOpen;
-	}
+	/* seek to location, unless location is FS_CURR*/
+	if (location != FS_CURR)
+		fseek(file,location,SEEK_SET);
+	
 
 	errno = 0;
-	if (fwrite(buffer,1,bufferSize,file) != bufferSize){
+	if (fwrite(buffer,1,count,file) != count){
 		fprintf(logOut,"Error: write_file write error. errno: %d\n",errno);
 		return fseWrongWrite;
-	}
-
-	errno = 0;
-	if (fclose(file) != 0){
-		fprintf(logOut,"Error: write_file close error. errno: %d\n",errno);
-		return fseNoClose;
 	}
 
 	return fseNoError;
@@ -116,20 +58,30 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	int flags;
 
 	
+
+
 	if (!filePath || !fileFlags || !output){ /* if parameters are NULL */
 		fputs("Error: open_file got a does not take NULL\n",logOut);
+		return fseLogic;
+	}
+
+	if (fileFlags[0] == '\0'){
+		fputs("Error: open_file needs file flags!\n",logOut);
 		return fseLogic;
 	}
 
 	/* Get flags and filter out flags that wont work for us*/
 	flags = getAttributes(filePath);
 
-	if ((flags & fsfReadAccess) == 0 && fileFlags[0] == 'r'){
+
+
+	if ((flags & fsfReadAccess) == 0 && (fileFlags[0] == 'r' || fileFlags[1] == '+')){
 		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
 		return fseNoRead;
 	}
 
-	if ((flags & fsfWriteAccess) == 0 && fileFlags[0] == 'w'){
+	/* if we try to have write access, but dont have write acces.  DOES NOT TRIGGER IF THE FLAGS ARE fsfInvalid, because that likely means we will create the file later*/
+	if ((flags & fsfWriteAccess) == 0 && (fileFlags[0] == 'w' || fileFlags[0] == 'a' || fileFlags[1] == '+') && flags != fsfInvalid){
 		fprintf(logOut,"Error: open_file has no write access to %s\n",filePath);
 		return fseNoWrite;
 	}
@@ -267,6 +219,29 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 
 
 
+/* reads COUNT bytes into BUFFER from LOCATION in FILE
+	If LOCATION is FS_CURR (-1) then it reads at the current position. 
+*/
+fsError read_file(FILE* file, char** buffer, size_t count, uint32 location){
+	
+
+	if (file == NULL)
+		return fseNULLParam;
+	
+
+	/* seek to location, unless location is FS_CURR*/
+	if (location != FS_CURR)
+		fseek(file,location,SEEK_SET);
+	
+
+	errno = 0;
+	if (fread(*buffer,1, count, file ) != count){
+		fprintf(logOut,"Error: read_file write error. errno: %d\n",errno);
+		return fseWrongRead;
+	}
+
+	return fseNoError;
+}
 
 
 

@@ -136,7 +136,7 @@ void test0(){ /* TEST 0 */ /* own functions used: strcat_c */
 
 
 
-void test1(){ /* TEST 1 */ /* own functions used: getAttributes, write_file, open_file, create_lineRead, read_line, close_file*/
+void test1(){ /* TEST 1 */
 	fputs("testing file writing and reading... ",stdout);
 
 	fail = false;
@@ -148,13 +148,26 @@ void test1(){ /* TEST 1 */ /* own functions used: getAttributes, write_file, ope
 		return;
 	}
 
-	error = fseNoError;
-	/* creating and writing the file*/
+	/* open and creates file */
 	{
-		error =  write_file("out.txt", "Hello World\n12", 15);
+		error = open_file("out.txt", "w", &file);
 		if (error != fseNoError)
 			goto test1_cleanup;
 	}
+
+	/* creating and writing the file*/
+	{
+		error =  write_file(file, "Hello World\n12", 15);
+		if (error != fseNoError)
+			goto test1_cleanup;
+	}
+
+	/* closes file */
+	{
+		if (close_file(file,true) != fseNoError)
+			goto test1_cleanup;
+	}
+
 
 	/* Opens the file and prepares the reader*/
 
@@ -240,7 +253,7 @@ test1_noFail:
 
 
 
-void test2() /* TEST 2 */ /* own functions used: getAttributes, write_file, make_dir, remove_dir*/ {
+void test2() /* TEST 2 */ {
 	fail = false;
 	fputs("testing getAttributes and mkdir/rmdir functions... ", stdout);
 
@@ -248,7 +261,22 @@ void test2() /* TEST 2 */ /* own functions used: getAttributes, write_file, make
 	if (getAttributes("out.txt") != 0)
 		fail = true;
 
-	write_file("out.txt", "hi", 3);
+	/* create test file*/
+	{
+
+		if (open_file("out.txt", "w", &file) = fseNoError){
+			skipped++; return;
+		}
+		if (write_file(file, "hi", 3,FS_CURR) = fseNoError){
+			skipped++; return;
+		}
+		if (close_file(file,true) != fseNoError)
+			skipped++; return;
+		}
+
+	}
+
+
 	if (getAttributes("out.txt") != (fsfReadAccess | fsfWriteAccess))
 		fail = true;
 	remove("out.txt");
@@ -273,44 +301,6 @@ void test2() /* TEST 2 */ /* own functions used: getAttributes, write_file, make
 }
 
 
-void test3(){ /* TEST 3 */ /* own functions used: getAttributes, create_file, close_file*/
-	fail = false;
-
-	fputs("testing create_file function... ",stdout);
-
-
-	remove("log.txt");
-	if (getAttributes("log.txt") != 0) {
-		skipped++;
-		puts("test can't commence!");
-		return;
-	}
-	
-
-	if (create_file("log.txt", &file) != fseNoError) 
-		fail = true;
-	
-
-	if (close_file(file, false) != fseNoError) 
-		fail = true;
-	file = NULL;
-	
-
-	/* chceck if file exists here */
-
-	if (getAttributes("log.txt") == 0) {
-		fail = true;
-	}
-
-
-	if (!fail){
-		puts("passed!");
-		passed++;
-	}else{
-		puts("failed!");
-		failed++;
-	}
-}
 
 
 void test4(){ /* TEST 4 */  /* own functions used: getAttributes, set_log_file, close_log_file, open_file, create_lineRead, read_line, close_file*/
@@ -562,6 +552,9 @@ void test6(){ /* own functions used: get_args*/
 		rewind(scrOut); /* go to start of file again, so new stuff overwrites the old one */
 	}
 
+
+	printf("TEST IS NOT YET DONE!!! ADD CASES HERE!\n");
+
 	logFile = oldLogFile;
 
 	if (!fail) {
@@ -592,7 +585,7 @@ int main(){
 	test0();
 	test1();
 	test2();
-	test3();
+	/*test3();*/
 	test4();
 	test5();
 
@@ -607,6 +600,7 @@ int main(){
 	scrOut = fopen("src.txt","w+");
 
 
+	/*TODO: Test open_file to make sure it can do r,w,a,w+ and r+*/
 
 	test6();
 	test7();

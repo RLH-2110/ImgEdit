@@ -61,11 +61,10 @@ void append_arg(char *arg, char ***list, int *listC){
 
 void get_args(int argc, char*argv[]){
 	
+
 	int argI = 1; /* argument index, starts at first argument, ignores filename */
 	int i;
 	int result;
-
-
 
 	for (;argI + 1 <= argc; argI++){ /* argc is a count, argI is an index thats why we need to increment argI */
 
@@ -118,6 +117,7 @@ void get_args(int argc, char*argv[]){
 				break;
 
 			case 'h':
+
 				argumentFlags += flags_h;
 
 				print_help(argv[0]);
@@ -153,10 +153,10 @@ int fetch_flag_arg_count(int argc, char*argv[], int firstIndex){
 
 void print_help(char* argv0){
 	fprintf(scrOut,"Usage: %s [-o <output>] [-h] [-i <inputs>...]\n",argv0);
-	fputs("  -o <output>: <output> specifies the name of the output file",scrOut);
-	fputs("  -i <inputs>: <inputs> specifies the input files, can be one or multiple",scrOut);
-	fputs("  -h: shows this help screen",scrOut);
-	fputs("  -l: <logfile>: write logs into <logfile> file",scrOut);
+	fputs("  -o <output>: <output> specifies the name of the output file\n",scrOut);
+	fputs("  -i <inputs>: <inputs> specifies the input files, can be one or multiple\n",scrOut);
+	fputs("  -h: shows this help screen\n",scrOut);
+	fputs("  -l: <logfile>: write logs into <logfile> file\n",scrOut);
 }
 
 

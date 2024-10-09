@@ -59,6 +59,7 @@ void critical_test_fail(){
 	exit(1);
 }
 
+/* might become unused. it was inteded to be used for calling the app with SYSTEM() and checking the results.*/
 char* set_flags(CALLER_FREES char *result, const char *flags){
 
 
@@ -88,7 +89,7 @@ char* set_flags(CALLER_FREES char *result, const char *flags){
 	return result;
 }
 
-void test0(){ /* TEST 0 */
+void test0(){ /* TEST 0 */ /* own functions used: strcat_c */
 		fputs("testing strcat_c... ",stdout);
 
 
@@ -134,7 +135,7 @@ void test0(){ /* TEST 0 */
 
 
 
-void test1(){ /* TEST 1 */
+void test1(){ /* TEST 1 */ /* own functions used: getAttributes, write_file, open_file, create_lineRead, read_line, close_file*/
 	fputs("testing file writing and reading... ",stdout);
 
 	fail = false;
@@ -238,7 +239,7 @@ test1_noFail:
 
 
 
-void test2() /* TEST 2 */ {
+void test2() /* TEST 2 */ /* own functions used: getAttributes, write_file, make_dir, remove_dir*/ {
 	fail = false;
 	fputs("testing getAttributes and mkdir/rmdir functions... ", stdout);
 
@@ -271,7 +272,7 @@ void test2() /* TEST 2 */ {
 }
 
 
-void test3(){ /* TEST 3 */
+void test3(){ /* TEST 3 */ /* own functions used: getAttributes, create_file, close_file*/
 	fail = false;
 
 	fputs("testing create_file function... ",stdout);
@@ -311,7 +312,7 @@ void test3(){ /* TEST 3 */
 }
 
 
-void test4(){ /* TEST 4 */
+void test4(){ /* TEST 4 */  /* own functions used: getAttributes, set_log_file, close_log_file, open_file, create_lineRead, read_line, close_file*/
 	fail = false;
 
 	fputs("testing file logging... ",stdout);
@@ -395,7 +396,7 @@ void test4(){ /* TEST 4 */
 	}
 }
 
-void test5() { 
+void test5() {  /* own functions used: getAttributes, write_file, open_file, create_lineRead, read_line, close_file*/
 	fputs("testing file writing and reading with buffers bigger than TEXT_READ_BUFF_SIZE... ",stdout);
 	fail = false;
 

@@ -61,8 +61,11 @@ fsError create_file(const char* filePath, FILE **out_file){
 
 
 
+/* 	Depricate and replace this.
+	its better to have a function that alows partial writes an option to seek around the file.
 
-
+	P.s. perhabs it will be keept for tests, but thats not sure yet.
+*/
 fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 	
 	FILE *file;

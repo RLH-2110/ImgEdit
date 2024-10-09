@@ -50,7 +50,7 @@ else
 	rm $(OUTPUT)
 endif
 	rm $(TESTER_OUTPUT)
-	rm log.txt out.txt 
+	rm log.txt out.txt src.txt 
 
 
 	

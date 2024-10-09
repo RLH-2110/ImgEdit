@@ -5,6 +5,7 @@
 #include "argParse/flags.h"
 
 FILE *logOut;
+FILE *scrOut; 
 
 void setup(){
 	logOut = stdout; /* log in the Terminal*/
@@ -14,8 +15,10 @@ bool set_log_file(){
 
 	FILE *tmp;
 
+	scrOut = stdout;
+
 	if (logFile == NULL){
-		puts("Error: set_log_file: logFile variable must not be NULL!");
+		fputs("Error: set_log_file: logFile variable must not be NULL!",scrOut);
 	}
 
 	if (create_file(logFile, &tmp) == fseNoError){
@@ -26,7 +29,7 @@ bool set_log_file(){
 		fprintf(logOut,"error setting log file to: %s\n",logFile);
 		return false;
 	}
-	
+
 }
 
 

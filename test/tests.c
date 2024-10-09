@@ -5,6 +5,7 @@
 #include <errno.h>
 
 #include "../argParse/flags.h"
+#include "../argParse/args.h"
 #include "../comp/fs/fs.h"
 #include "../compat.h"
 #include "../str.h"
@@ -510,8 +511,71 @@ test5_noFail:
 
 }
 
-void test6() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
-	puts("TODO: add more tests! like a test for argsparse");
+void test6(){ /* own functions used: get_args*/
+
+	char* oldLogFile;
+	int argc;
+	char** argv;
+
+
+	fputs("testing argument parseing... ",stdout);
+	fail = false;
+
+	/* backup old logging string */
+	oldLogFile = logFile;
+
+
+	/* imgEdit -h */
+	{
+		argc = 2;
+		argv = malloc(argc*sizeof(void*)); /* argument count * size of pointer*/
+
+		if (argv == NULL)
+			oom();
+
+		argv[0] = "ImgEdit";
+		argv[1] = "-h";
+		
+		/* reset variables that may be set*/
+		argumentFlags = 0; /* the flags that are set with the command line! */
+		inputFiles = NULL; 
+		inputFilesC = 0; /* list of how many filenames there are in inputFiles */
+		outputFile = NULL;
+		logFile = NULL;
+
+		get_args(argc,argv);
+
+		sExpected = "Usage:";
+		sInputA = malloc(strlen(sExpected)+1);
+		if (sInputA == NULL)
+			oom();
+
+		rewind(scrOut); /* go to start of file */
+		fgets(sInputA,strlen(sExpected)+1,scrOut);  /* read the output */
+
+		if (strcmp(sInputA,sExpected) != 0)
+			fail = true;
+		
+		printf("\nexpected: %s\ngot: %s\n",sExpected,sInputA);
+
+		free(argv); argv = NULL;
+		rewind(scrOut); /* go to start of file again, so new stuff overwrites the old one */
+	}
+
+	logFile = oldLogFile;
+
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else {
+		puts("failed!");
+		failed++;
+	}
+}
+
+void test7() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
+	puts("TODO: add more tests! like open_file with the 'w' flag!");
 
 
 }
@@ -531,7 +595,24 @@ int main(){
 	test3();
 	test4();
 	test5();
+
+	fputs("Trying to redirect screen output for most functionts to src.txt... ",stdout);
+
+	/*if(create_file("src.txt", &scrOut) != fseNoError){
+		puts("failed!\n\tyou may see unrelated text on the screen as tests commence!");
+		scrOut = stdout;
+	}else
+		puts("success");
+	*/
+	scrOut = fopen("src.txt","w+");
+
+
+
 	test6();
+	test7();
+
+	if (scrOut != stdout)
+		close_file(scrOut,false);
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS,skipped,NUM_TESTS);
 	close_log_file();

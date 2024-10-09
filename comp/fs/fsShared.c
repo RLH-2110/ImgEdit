@@ -252,7 +252,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 
 	if (buff[TEXT_READ_BUFF_SIZE-2] != '\n' && buff[TEXT_READ_BUFF_SIZE-2] != '\0' && !feof(reader->file)) { /* not the last line, and does not end with \n and its not the end of file*/
 		/* In this case our buffer is probably too small.*/
-		fprintf(logOut, "Error: read_line function can't read line %d! it does not fit in buffer of size %d!\n", reader->currentLine + 1, TEXT_READ_BUFF_SIZE);
+		fprintf(logOut, "Error: read_line function can't read line %ld! it does not fit in buffer of size %d!\n", reader->currentLine + 1, TEXT_READ_BUFF_SIZE);
 	
 		errno = ERANGE;
 		return NULL;

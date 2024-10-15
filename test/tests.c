@@ -91,7 +91,7 @@ char* set_flags(CALLER_FREES char *result, const char *flags){
 }
 
 void test0(){ /* TEST 0 */ /* own functions used: strcat_c */
-		fputs("testing strcat_c... ",stdout);
+		fputs("tst0 strcat_c...                 ",stdout);
 
 
 		sInputA = "hallo";
@@ -125,7 +125,7 @@ void test0(){ /* TEST 0 */ /* own functions used: strcat_c */
 			critical_test_fail();
 
 
-		puts(" passed!");
+		puts("passed!");
 		passed++;
 }
 
@@ -134,10 +134,8 @@ void test0(){ /* TEST 0 */ /* own functions used: strcat_c */
 
 
 
-
-
 void test1(){ /* TEST 1 */
-	fputs("testing file writing and reading... ",stdout);
+	fputs("tst1 basic file r/w...           ",stdout);
 
 	fail = false;
 
@@ -157,14 +155,14 @@ void test1(){ /* TEST 1 */
 
 	/* creating and writing the file*/
 	{
-		error =  write_file(file, "Hello World\n12", 15);
+		error =  write_file(file, "Hello World\n12", 15,FS_CURR);
 		if (error != fseNoError)
 			goto test1_cleanup;
 	}
 
 	/* closes file */
 	{
-		if (close_file(file,true) != fseNoError)
+		if (close_file(file,false) != fseNoError)
 			goto test1_cleanup;
 	}
 
@@ -255,7 +253,7 @@ test1_noFail:
 
 void test2() /* TEST 2 */ {
 	fail = false;
-	fputs("testing getAttributes and mkdir/rmdir functions... ", stdout);
+	fputs("tst2 getAttributes & mk/rmdir... ", stdout);
 
 	remove("out.txt");
 	if (getAttributes("out.txt") != 0)
@@ -264,18 +262,13 @@ void test2() /* TEST 2 */ {
 	/* create test file*/
 	{
 
-		if (open_file("out.txt", "w", &file) = fseNoError){
-			skipped++; return;
-		}
-		if (write_file(file, "hi", 3,FS_CURR) = fseNoError){
-			skipped++; return;
-		}
+		if (open_file("out.txt", "w", &file) == fseNoError)
+			goto test2_skip;
+		if (write_file(file, "hi", 3,FS_CURR) == fseNoError)
+			goto test2_skip;
 		if (close_file(file,true) != fseNoError)
-			skipped++; return;
-		}
-
+			goto test2_skip;
 	}
-
 
 	if (getAttributes("out.txt") != (fsfReadAccess | fsfWriteAccess))
 		fail = true;
@@ -298,15 +291,22 @@ void test2() /* TEST 2 */ {
 		puts("failed!");
 		failed++;
 	}
+
+	return;
+
+	test2_skip:
+	skipped++;
+	puts("skipped");
+	return;
 }
 
 
 
 
-void test4(){ /* TEST 4 */  /* own functions used: getAttributes, set_log_file, close_log_file, open_file, create_lineRead, read_line, close_file*/
+void test3(){  /* own functions used: getAttributes, set_log_file, close_log_file, open_file, create_lineRead, read_line, close_file*/
 	fail = false;
 
-	fputs("testing file logging... ",stdout);
+	fputs("tst3 file logging...             ",stdout);
 
 	remove("log.txt");
 
@@ -334,11 +334,11 @@ void test4(){ /* TEST 4 */  /* own functions used: getAttributes, set_log_file, 
 		errno = 0;
 		if (open_file("log.txt","r",&file) != fseNoError){
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 		if (errno != 0){
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 
 		reader = create_lineRead(file);
@@ -353,17 +353,17 @@ void test4(){ /* TEST 4 */  /* own functions used: getAttributes, set_log_file, 
 
 		if (errno != 0 || tmp == NULL) {
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 
 		if (strcmp(tmp,sExpected) != 0) {
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 
 
 
-	test4_cleanup:
+	test3_cleanup:
 
 		free(tmp); tmp = NULL;
 
@@ -387,14 +387,15 @@ void test4(){ /* TEST 4 */  /* own functions used: getAttributes, set_log_file, 
 	}
 }
 
-void test5() {  /* own functions used: getAttributes, write_file, open_file, create_lineRead, read_line, close_file*/
-	fputs("testing file writing and reading with buffers bigger than TEXT_READ_BUFF_SIZE... ",stdout);
+void test4() {  /* own functions used: getAttributes, write_file, open_file, create_lineRead, read_line, close_file*/
+	fputs("tst4 file r/w with big buffer... ",stdout);
 	fail = false;
 
 	remove("out.txt");
 	if (getAttributes("out.txt") != 0) {
 		puts("test can't commence!");
 		skipped++;
+		puts("skipped");
 		return;
 	}
 
@@ -428,9 +429,16 @@ void test5() {  /* own functions used: getAttributes, write_file, open_file, cre
 	error = fseNoError;
 	/* creating and writing the file*/
 	{
-		error =  write_file("out.txt", sInputA, strlen(sInputA)+1);
+
+		if (open_file("out.txt","w",&file) != fseNoError)
+			goto test4_cleanup;
+
+		error =  write_file(file, sInputA, strlen(sInputA)+1,-1);
 		if (error != fseNoError)
-			goto test5_cleanup;
+			goto test4_cleanup;
+
+		if (close_file(file,false) != fseNoError)
+			goto test4_cleanup;
 	}
 
 	/* Opens the file and prepares the reader*/
@@ -438,10 +446,10 @@ void test5() {  /* own functions used: getAttributes, write_file, open_file, cre
 	{
 		errno = 0;
 		if (open_file("out.txt", "r", &file) != fseNoError) 
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		if (errno != 0) 
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		reader = create_lineRead(file);
 	}
@@ -455,10 +463,10 @@ void test5() {  /* own functions used: getAttributes, write_file, open_file, cre
 		tmp = read_line(reader, 1);
 
 		if (tmp == NULL || errno != 0)
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		if (strcmp(tmp,sExpected) != 0)
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		free(tmp); tmp = NULL;
 	}
@@ -470,15 +478,15 @@ void test5() {  /* own functions used: getAttributes, write_file, open_file, cre
 		tmp = read_line(reader, 2);
 
 		if (errno != ERANGE)
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		free(tmp); tmp = NULL;
 	}
 
-	goto test5_noFail;
-test5_cleanup:
+	goto test4_noFail;
+test4_cleanup:
 	fail = true;
-test5_noFail:
+test4_noFail:
 
 	if (reader != NULL)
 		if (close_file(reader->file, false) != fseNoError)
@@ -501,6 +509,14 @@ test5_noFail:
 
 }
 
+void test5(){
+	fputs("tst5 segmented writing...        ",stdout);
+
+	fputs("!finish\n",stdout);
+
+	skipped++;
+}
+
 void test6(){ /* own functions used: get_args*/
 
 	char* oldLogFile;
@@ -508,7 +524,7 @@ void test6(){ /* own functions used: get_args*/
 	char** argv;
 
 
-	fputs("testing argument parseing... ",stdout);
+	fputs("tst6 argument parseing...        ",stdout);
 	fail = false;
 
 	/* backup old logging string */
@@ -546,7 +562,6 @@ void test6(){ /* own functions used: get_args*/
 		if (strcmp(sInputA,sExpected) != 0)
 			fail = true;
 		
-		printf("\nexpected: %s\ngot: %s\n",sExpected,sInputA);
 
 		free(argv); argv = NULL;
 		rewind(scrOut); /* go to start of file again, so new stuff overwrites the old one */
@@ -568,7 +583,7 @@ void test6(){ /* own functions used: get_args*/
 }
 
 void test7() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
-	puts("TODO: add more tests! like open_file with the 'w' flag!");
+	puts("TODO: add more tests!");
 
 
 }
@@ -585,20 +600,19 @@ int main(){
 	test0();
 	test1();
 	test2();
-	/*test3();*/
+	test3();
 	test4();
 	test5();
 
-	fputs("Trying to redirect screen output for most functionts to src.txt... ",stdout);
+	fputs("\nredirecting screen to src.txt... ",stdout);
 
-	/*if(create_file("src.txt", &scrOut) != fseNoError){
-		puts("failed!\n\tyou may see unrelated text on the screen as tests commence!");
+
+	if(open_file("src.txt","w+", &scrOut) != fseNoError){
+		puts("failed!\n\tyou may see unrelated text on the screen\n\n");
 		scrOut = stdout;
 	}else
-		puts("success");
-	*/
-	scrOut = fopen("src.txt","w+");
-
+		puts("success\n\n");
+	
 
 	/*TODO: Test open_file to make sure it can do r,w,a,w+ and r+*/
 

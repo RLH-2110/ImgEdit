@@ -94,8 +94,10 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	errno = 0;
 	file = fopen(filePath,fileFlags);
 
-	if (file == NULL || errno != 0){
-		fprintf(logOut,"Error: open_file open error. errno: %d\n",errno);
+	if (file == NULL /*|| errno != 0*/){
+		/*fprintf(logOut,"Error: open_file open error. errno: %d\n",errno);*/
+		fputs("Error: open_file open error!",logOut);
+
 		return fseNoOpen;
 	}
 	

@@ -60,6 +60,13 @@ void critical_test_fail(){
 	exit(1);
 }
 
+void critical_fail(){
+	printf("\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
+	close_log_file();
+	exit(1);
+}
+
+
 /* might become unused. it was inteded to be used for calling the app with SYSTEM() and checking the results.*/
 char* set_flags(CALLER_FREES char *result, const char *flags){
 
@@ -517,6 +524,23 @@ void test5(){
 	skipped++;
 }
 
+
+
+
+
+
+
+
+
+
+
+/*  /--------------------------------------\ */
+/* | SCREEN IS REDIRECTED FROM HERE ONE OUT |*/
+/*  \--------------------------------------/ */
+
+
+
+
 void test6(){ /* own functions used: get_args*/
 
 	char* oldLogFile;
@@ -609,8 +633,9 @@ int main(){
 
 
 	if(open_file("src.txt","w+", &scrOut) != fseNoError){
-		puts("failed!\nyou may see unrelated text on the screen\n\n");
+		puts("failed!\nWe can not proceed!\n\n");
 		scrOut = stdout;
+		critical_fail();
 	}else
 		puts("success\n\n");
 	

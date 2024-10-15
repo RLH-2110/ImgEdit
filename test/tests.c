@@ -562,6 +562,7 @@ void test6(){ /* own functions used: get_args*/
 		if (strcmp(sInputA,sExpected) != 0)
 			fail = true;
 		
+		printf("\nexpected: %s\tgot: %s\n",sExpected,sInputA);
 
 		free(argv); argv = NULL;
 		rewind(scrOut); /* go to start of file again, so new stuff overwrites the old one */
@@ -608,7 +609,7 @@ int main(){
 
 
 	if(open_file("src.txt","w+", &scrOut) != fseNoError){
-		puts("failed!\n\tyou may see unrelated text on the screen\n\n");
+		puts("failed!\nyou may see unrelated text on the screen\n\n");
 		scrOut = stdout;
 	}else
 		puts("success\n\n");

@@ -86,8 +86,6 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		if (close_file(file, false) != fseNoError)
 			return fseInternalFSError;
 
-		_sleep(5000);
-
 		/* Get flags and filter out flags that wont work for us*/
 		flags = getAttributes(filePath);
 

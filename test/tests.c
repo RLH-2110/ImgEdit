@@ -148,7 +148,7 @@ void test1(){ /* TEST 1 */
 
 	remove("out.txt");
 	if (getAttributes("out.txt") != 0) {
-		puts("skipped");
+		puts("test can't commence!");
 		critical_test_fail();
 		return;
 	}
@@ -171,7 +171,6 @@ void test1(){ /* TEST 1 */
 	{
 		if (close_file(file,false) != fseNoError)
 			goto test1_cleanup;
-		file = NULL;
 	}
 
 
@@ -241,16 +240,13 @@ test1_cleanup:
 	fail = true;
 test1_noFail:
 
-	if (reader != NULL) {
+	if (reader != NULL)
 		if (close_file(reader->file, false) != fseNoError)
 			fail = true;
-		reader->file = NULL;
-	}
-	file = NULL;
-	
+	reader->file = NULL;
+
 	free(reader); reader = NULL;
 
-	
 
 	if (!fail) {
 		puts("passed!");
@@ -323,7 +319,7 @@ void test3(){  /* own functions used: getAttributes, set_log_file, close_log_fil
 
 	if (getAttributes("log.txt") != 0) {
 		skipped++;
-		puts("skipped");
+		puts("test can't commence!");
 		return;
 	}
 
@@ -404,7 +400,7 @@ void test4() {  /* own functions used: getAttributes, write_file, open_file, cre
 
 	remove("out.txt");
 	if (getAttributes("out.txt") != 0) {
-		puts("skipped");
+		puts("test can't commence!");
 		skipped++;
 		puts("skipped");
 		return;
@@ -621,7 +617,7 @@ int main(){
 
 	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
 	setup();
-	puts("Note: skipped are tests with FS errors!");
+
 	failed = 0;
 	passed = 0;
 	skipped = 0;

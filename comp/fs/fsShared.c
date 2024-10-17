@@ -57,8 +57,8 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	FILE *file;
 	int flags;
 
-	bool create = false; /* flag for if we want to cretate the file*/
-	bool created = false; /* flag for when the file was created*/
+	
+
 
 	if (!filePath || !fileFlags || !output){ /* if parameters are NULL */
 		fputs("Error: open_file got a does not take NULL\n",logOut);
@@ -70,43 +70,10 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		return fseLogic;
 	}
 
-
-
-
 	/* Get flags and filter out flags that wont work for us*/
 	flags = getAttributes(filePath);
 
 
-
-	if (always_false) { /* never true, we get here with goto*/
-		open_file_redo_access_tests: /* comes back later after the file was created, to do the tests*/
-
-
-		/* close file, so we can use getAttributes*/
-		if (close_file(file, false) != fseNoError)
-			return fseInternalFSError;
-
-		_sleep(5000);
-
-		/* Get flags and filter out flags that wont work for us*/
-		flags = getAttributes(filePath);
-
-		/* we will open the file again later*/
-	}
-
-	if (flags == fsfNoFile && create == false && created == false) {
-		create = true;
-		goto open_file_skip_access_tests; /* skip access tests for now, if the file does not exist */
-	}
-
-	if (flags & fsfInvalid) {
-		fprintf(logOut, "Error: open_file found file with invalid attibutes!");
-
-		if (fileFlags[0] == 'r')
-			return fseNoRead;
-		else
-			return fseNoWrite;
-	}
 
 	if ((flags & fsfReadAccess) == 0 && (fileFlags[0] == 'r' || fileFlags[1] == '+')){
 		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
@@ -114,7 +81,7 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	}
 
 	/* if we try to have write access, but dont have write acces.  DOES NOT TRIGGER IF THE FLAGS ARE fsfInvalid, because that likely means we will create the file later*/
-	if ((flags & fsfWriteAccess) == 0 && (fileFlags[0] == 'w' || fileFlags[0] == 'a' || fileFlags[1] == '+')){
+	if ((flags & fsfWriteAccess) == 0 && (fileFlags[0] == 'w' || fileFlags[0] == 'a' || fileFlags[1] == '+') && flags != fsfInvalid){
 		fprintf(logOut,"Error: open_file has no write access to %s\n",filePath);
 		return fseNoWrite;
 	}
@@ -123,8 +90,6 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		fprintf(logOut,"Error: open_file error! %s is a directory!\n",filePath);
 		return fseIsDirectory;
 	}
-
-	open_file_skip_access_tests:
 
 	errno = 0;
 	file = fopen(filePath,fileFlags);
@@ -137,13 +102,6 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	}
 	
 	*output = file;
-
-	
-	if (create == true) {
-		create = false; /* avoid loop */
-		created = true;
-		goto open_file_redo_access_tests;
-	}
 	
 	return fseNoError;
 }
@@ -312,9 +270,6 @@ fsError close_file(FILE* file,bool log){
 
 		if (log)
 			fputs("closing file...",logOut);
-
-		if (fflush(file) != 0)
-			return fseNoFlush;
 
 		errno = 0;
 		if (fclose(file) != 0){

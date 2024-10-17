@@ -62,7 +62,6 @@ typedef short bool;
 #ifndef true
 #define true 1
 #define false 0
-#define always_false 1 == 0
 #endif
 
 #define FS_CURR -1
@@ -88,24 +87,17 @@ typedef short bool;
 /* /#########\ */
 /*|ERROR TYPES|*/
 /* \#########/ */
-typedef enum {fseNoError,
-	fseNoOpen, fseNoClose, fseNoFlush,
-	fseWrongWrite, fseWrongRead, 
-	fseIsDirectory, fseIsFile, 
-	fseNoRead, fseNoWrite, fseNoCreate, fseNoDelete,
-	fseMemory, fseLogic, fseBufferSize, fseNULLParam, fseInternalFSError
-} fsError;
+typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseWrongRead, fseIsDirectory, fseIsFile, fseNoRead, fseNoWrite, fseMemory, fseLogic, fseNoCreate, fseNoDelete, fseBufferSize, fseNULLParam} fsError; 
 
 
 /* /###\ */
 /*|Enums|*/
 /* \###/ */
-typedef enum {
-	fsfNoFile		= 0x00,
-	fsfReadAccess	= 0x01,
-	fsfWriteAccess	= 0x02,
-	fsfIsDirectory	= 0x04,
-	fsfInvalid		= 0x80 /*most significant bit set*/
+typedef enum {	
+	fsfInvalid		= 0x00, 
+	fsfReadAccess 	= 0x01,
+	fsfWriteAccess 	= 0x02,
+	fsfIsDirectory	= 0x04
 } fsFlags; 
 
 

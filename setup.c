@@ -7,12 +7,12 @@
 FILE *logOut;
 FILE *scrOut; 
 
-void setup(){
+void setup(void){
 	logOut = stdout; /* log in the Terminal*/
 	scrOut = stdout;
 }
 
-bool set_log_file(){
+bool set_log_file(void){
 
 	FILE *tmp;
 

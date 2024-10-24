@@ -1,5 +1,5 @@
 #ifndef fsH
-#define fsh
+#define fsH
 
 #include <stdio.h>
 #include "../../defines.h"
@@ -62,7 +62,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line);
 
 
 /* Closes the log file, if it exists. */
-fsError close_log_file();
+fsError close_log_file(void);
 
 /* closes file, if its not NULL. Logs if log is non zero, otherwhise it wont log*/
 fsError close_file(FILE* file,bool log);

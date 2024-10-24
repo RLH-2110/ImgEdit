@@ -284,7 +284,7 @@ fsError close_file(FILE* file,bool log){
 
 
 /* Closes the log file, if it exists. */
-fsError close_log_file(){
+fsError close_log_file(void){
 	
 	if (logOut != stdout){
 

@@ -75,6 +75,35 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 
 
 
+	if (always_false) { /* never true, we get here with goto*/
+		open_file_redo_access_tests: /* comes back later after the file was created, to do the tests*/
+
+
+		/* close file, so we can use getAttributes*/
+		if (close_file(file, false) != fseNoError)
+			return fseInternalFSError;
+
+		/* Get flags and filter out flags that wont work for us*/
+		flags = getAttributes(filePath);
+
+		/* we will open the file again later*/
+	}
+
+	if (flags == fsfNoFile && create == false && created == false) {
+		create = true;
+		goto open_file_skip_access_tests; /* skip access tests for now, if the file does not exist */
+	}
+
+	if (flags & fsfInvalid) {
+		fprintf(logOut, "Error: open_file found file with invalid attibutes!");
+
+		if (fileFlags[0] == 'r')
+			return fseNoRead;
+		else
+			return fseNoWrite;
+	}
+
+
 	if ((flags & fsfReadAccess) == 0 && (fileFlags[0] == 'r' || fileFlags[1] == '+')){
 		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
 		return fseNoRead;

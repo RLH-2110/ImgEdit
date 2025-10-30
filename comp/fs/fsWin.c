@@ -25,7 +25,11 @@ fsError remove_dir(const char* path) {
 
 fsFlags getAttributes(const char *path){
 	int flags;
-	DWORD attributes = GetFileAttributes(path);
+
+	DWORD attributes;
+
+	SetLastError(0);
+	attributes = GetFileAttributes(path);
 
 	if (attributes == INVALID_FILE_ATTRIBUTES)
 		return fsfInvalid;

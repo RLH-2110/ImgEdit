@@ -147,8 +147,8 @@ void test1(){ /* TEST 1 */
 	fail = false;
 
 	remove("out.txt");
-	if (getAttributes("out.txt") != 0) {
-		puts("test can't commence!");
+	if (getAttributes("out.txt") != fsfNoFile) {
+		puts("skipped");
 		critical_test_fail();
 		return;
 	}
@@ -257,13 +257,30 @@ test1_noFail:
 }
 
 
+void test1_5(char* argv0){ /* TEST 1.5 */
+
+	fputs("tst1.5 getAttributes...          ", stdout);
+
+	if (getAttributes(argv0) != fsfNoFile) /* test if the exe file we are currently running exists */
+		fail = true;
+
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else {
+		puts("failed!");
+		failed++;
+	}
+}
+
 
 void test2() /* TEST 2 */ {
 	fail = false;
 	fputs("tst2 getAttributes & mk/rmdir... ", stdout);
 
 	remove("out.txt");
-	if (getAttributes("out.txt") != 0)
+	if (getAttributes("out.txt") != fsfNoFile)
 		fail = true;
 
 	/* create test file*/
@@ -286,7 +303,7 @@ void test2() /* TEST 2 */ {
 		fail = true;
 	remove_dir("out.txt");
 
-	if (getAttributes("out.txt") != 0)
+	if (getAttributes("out.txt") != fsfNoFile)
 		fail = true;
 
 
@@ -317,7 +334,7 @@ void test3(){  /* own functions used: getAttributes, set_log_file, close_log_fil
 
 	remove("log.txt");
 
-	if (getAttributes("log.txt") != 0) {
+	if (getAttributes("log.txt") != fsfNoFile) {
 		skipped++;
 		puts("test can't commence!");
 		return;
@@ -399,8 +416,8 @@ void test4() {  /* own functions used: getAttributes, write_file, open_file, cre
 	fail = false;
 
 	remove("out.txt");
-	if (getAttributes("out.txt") != 0) {
-		puts("test can't commence!");
+	if (getAttributes("out.txt") != fsfNoFile) {
+		puts("skipped");
 		skipped++;
 		puts("skipped");
 		return;
@@ -613,7 +630,7 @@ void test7() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
 
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
 	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
 	setup();
@@ -624,6 +641,7 @@ int main(){
 
 	test0();
 	test1();
+	test1_5(argv[0]);
 	test2();
 	test3();
 	test4();

@@ -49,14 +49,14 @@ fsError write_file(FILE* file, const char* buffer, size_t count, uint32 location
 /*  \#######/  */
 
 
-
+/* fileFlags is the same as fopen!*/
 
 
 fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 
 	FILE *file;
 	int flags;
-
+	bool create = false;
 	
 
 
@@ -74,24 +74,22 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	flags = getAttributes(filePath);
 
 
+	if (flags == fsfNoFile && create == false && fileFlags[0] != 'r') { /*create file if it does not exist, unless we read only*/
+		create = true;
+		file = fopen(filePath,fileFlags);
 
-	if (always_false) { /* never true, we get here with goto*/
-		open_file_redo_access_tests: /* comes back later after the file was created, to do the tests*/
-
-
-		/* close file, so we can use getAttributes*/
-		if (close_file(file, false) != fseNoError)
-			return fseInternalFSError;
-
-		/* Get flags and filter out flags that wont work for us*/
+		/* create a new file */
+		if (file == NULL){
+			fputs("Error: open_file create file error!",logOut);
+			return fseNoOpen;
+		}
+		if (fclose(file) != 0){
+			fputs("Error: open_file create file close error!",logOut);
+			return fseNoOpen;
+		}
+		
 		flags = getAttributes(filePath);
 
-		/* we will open the file again later*/
-	}
-
-	if (flags == fsfNoFile && create == false && created == false) {
-		create = true;
-		goto open_file_skip_access_tests; /* skip access tests for now, if the file does not exist */
 	}
 
 	if (flags & fsfInvalid) {
@@ -120,6 +118,7 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		return fseIsDirectory;
 	}
 
+open_file_skip_access_tests:
 	errno = 0;
 	file = fopen(filePath,fileFlags);
 

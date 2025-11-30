@@ -25,14 +25,22 @@ fsError remove_dir(const char* path) {
 
 fsFlags getAttributes(const char *path){
 	int flags;
-
+	DWORD lastError;
 	DWORD attributes;
 
 	SetLastError(0);
 	attributes = GetFileAttributes(path);
 
-	if (attributes == INVALID_FILE_ATTRIBUTES)
+	if (attributes == INVALID_FILE_ATTRIBUTES){
+
+		/* file does not exist*/
+		lastError = GetLastError();
+		if (lastError == ERROR_FILE_NOT_FOUND || lastError == ERROR_PATH_NOT_FOUND)
+			return fsfNoFile;
+
+		/* other error */
 		return fsfInvalid;
+	}
 
 	flags = 0;
 

@@ -61,7 +61,7 @@ void critical_test_fail(){
 }
 
 void critical_fail(){
-	printf("\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
+	printf("Critical failure!\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
 	close_log_file();
 	exit(1);
 }
@@ -148,7 +148,6 @@ void test1(){ /* TEST 1 */
 
 	remove("out.txt");
 	if (getAttributes("out.txt") != fsfNoFile) {
-		puts("skipped");
 		critical_test_fail();
 		return;
 	}
@@ -261,7 +260,7 @@ void test1_5(char* argv0){ /* TEST 1.5 */
 
 	fputs("tst1.5 getAttributes...          ", stdout);
 
-	if (getAttributes(argv0) != fsfNoFile) /* test if the exe file we are currently running exists */
+	if (getAttributes(argv0) == fsfNoFile || getAttributes(argv0) == fsfInvalid) /* test if the exe file we are currently running does not exists */
 		fail = true;
 
 	if (!fail) {
@@ -286,9 +285,9 @@ void test2() /* TEST 2 */ {
 	/* create test file*/
 	{
 
-		if (open_file("out.txt", "w", &file) == fseNoError)
+		if (open_file("out.txt", "w", &file) != fseNoError)
 			goto test2_skip;
-		if (write_file(file, "hi", 3,FS_CURR) == fseNoError)
+		if (write_file(file, "hi", 3,FS_CURR) != fseNoError)
 			goto test2_skip;
 		if (close_file(file,true) != fseNoError)
 			goto test2_skip;
@@ -319,8 +318,8 @@ void test2() /* TEST 2 */ {
 	return;
 
 	test2_skip:
-	skipped++;
-	puts("skipped");
+	failed++;
+	puts("Failed due to unrelated error");
 	return;
 }
 
@@ -417,9 +416,8 @@ void test4() {  /* own functions used: getAttributes, write_file, open_file, cre
 
 	remove("out.txt");
 	if (getAttributes("out.txt") != fsfNoFile) {
-		puts("skipped");
+		puts("skipped due to error");
 		skipped++;
-		puts("skipped");
 		return;
 	}
 
@@ -536,7 +534,7 @@ test4_noFail:
 void test5(){
 	fputs("tst5 segmented writing...        ",stdout);
 
-	fputs("!finish\n",stdout);
+	fputs("test not finished\n",stdout);
 
 	skipped++;
 }

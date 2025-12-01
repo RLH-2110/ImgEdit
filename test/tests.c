@@ -67,6 +67,12 @@ void critical_fail(){
 }
 
 
+/*	notes:
+
+	the extractOpenFlags will not have its own tests.
+
+*/
+
 /* might become unused. it was inteded to be used for calling the app with SYSTEM() and checking the results.*/
 char* set_flags(CALLER_FREES char *result, const char *flags){
 
@@ -141,7 +147,7 @@ void test0(){ /* TEST 0 */ /* own functions used: strcat_c */
 
 
 
-void test1(){ /* TEST 1 */
+void test1(){ /* TEST 1 */ /* own functions used: getAttributes, open_file, write_file, close_file, create_lineRead, read_line*/
 	fputs("tst1 basic file r/w...           ",stdout);
 
 	fail = false;
@@ -234,18 +240,76 @@ void test1(){ /* TEST 1 */
 		free(tmp); tmp = NULL;
 	}
 
+
+
+	/* read text with read_file */
+	{
+		#define TEST_TMP_BUFFER_SIZE 20
+		tmp = malloc(TEST_TMP_BUFFER_SIZE);
+		
+		
+		if (read_file(NULL, &tmp, 5, 0) != fseNULLParam) /* check NULL error */ 
+			goto test1_cleanup;
+		
+		if (read_file(file, &tmp, 5, (uint32)-2) != fseSeekError) /*check for seek error */
+			goto test1_cleanup;
+		
+
+
+		sExpected = "Hello";
+		if (read_file(file, &tmp, 5, 0) != fseNoError) /* read "Hello" from the file*/
+			goto test1_cleanup;
+
+		tmp[5] = '\0'; /*fix up not reading a terminator*/
+		if (strcmp(tmp,sExpected) != 0){
+			printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+			goto test1_cleanup;
+		}
+		
+
+
+		sExpected = " World\n";
+		if (read_file(file, &tmp, 7, FS_CURR) != fseNoError) /* read " World\n" from the file using the current position*/
+			goto test1_cleanup;
+
+		tmp[7] = '\0'; /*fix up not reading a terminator*/
+		if (strcmp(tmp,sExpected) != 0){
+			printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+			goto test1_cleanup;
+		}
+
+
+		tmp[0] = '\0'; /*set other data, so we can see that we overwrite it correctly again*/
+		sExpected = "Hello";
+		if (read_file(file, &tmp, 5, 0) != fseNoError) /* read "Hello" again, just to be sure we can seek*/
+			goto test1_cleanup;
+
+		tmp[5] = '\0'; /*fix up not reading a terminator*/
+		if (strcmp(tmp,sExpected) != 0){
+			printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+			goto test1_cleanup;
+		}
+
+		#undef TEST_TMP_BUFFER_SIZE
+	}
+
+	/* check if open_file respects the x flag*/
+	if (open_file("out.txt","wbx+",&file) != fseFileAlreadyExists)
+		goto test1_cleanup;
+
 	goto test1_noFail;
 test1_cleanup:
 	fail = true;
 test1_noFail:
 
+	free(tmp); tmp = NULL;
+	
 	if (reader != NULL)
 		if (close_file(reader->file, false) != fseNoError)
 			fail = true;
 	reader->file = NULL;
 
 	free(reader); reader = NULL;
-
 
 	if (!fail) {
 		puts("passed!");
@@ -256,7 +320,7 @@ test1_noFail:
 }
 
 
-void test1_5(char* argv0){ /* TEST 1.5 */
+void test1_5(char* argv0){ /* TEST 1.5 */ /* own functions used: getAttributes */
 
 	fputs("tst1.5 getAttributes...          ", stdout);
 
@@ -274,7 +338,7 @@ void test1_5(char* argv0){ /* TEST 1.5 */
 }
 
 
-void test2() /* TEST 2 */ {
+void test2() /* TEST 2 */ {  /* own functions used: getAttributes, open_file, write_file, close_file, make_dir, remove_dir*/
 	fail = false;
 	fputs("tst2 getAttributes & mk/rmdir... ", stdout);
 
@@ -297,11 +361,13 @@ void test2() /* TEST 2 */ {
 		fail = true;
 	remove("out.txt");
 	
+	/* create directory and check if it exists*/
 	make_dir("out.txt");
 	if (getAttributes("out.txt") != fsfIsDirectory)
 		fail = true;
-	remove_dir("out.txt");
 
+	/* delete directory and check if it exists*/
+	remove_dir("out.txt");
 	if (getAttributes("out.txt") != fsfNoFile)
 		fail = true;
 
@@ -533,10 +599,58 @@ test4_noFail:
 
 void test5(){
 	fputs("tst5 segmented writing...        ",stdout);
+	fail = false;
 
-	fputs("test not finished\n",stdout);
+	remove("out.txt");
+	if (open_file("out.txt","wb+",&file) != fseNoError)
+		goto test5_cleanup;
 
-	skipped++;
+	sInputA = "hello ";
+	sInputB = "World\n";
+	sInputC = "It a Test!";
+
+	error =  write_file(file, sInputB, strlen(sInputB),strlen(sInputA)); /* write World after where we excpect hello*/
+	if (error != fseNoError)
+		goto test5_cleanup;
+
+	error =  write_file(file, sInputA, strlen(sInputA),0); /* write hello before world*/
+	if (error != fseNoError)
+		goto test5_cleanup;
+
+	error =  write_file(file, sInputC, strlen(sInputC),strlen(sInputA)+strlen(sInputB)); /* write the last line */
+	if (error != fseNoError)
+		goto test5_cleanup;
+
+	tmp = malloc(strlen(sInputA)+strlen(sInputB)+strlen(sInputC)+1);
+	read_file(file,&tmp,strlen(sInputA)+strlen(sInputB)+strlen(sInputC),0);
+	tmp[strlen(sInputA)+strlen(sInputB)+strlen(sInputC)] = '\0';
+
+	sExpected = "hello World\nIt a Test!";
+	if (strcmp(tmp,sExpected) != 0){
+		printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+		goto test5_cleanup;
+	}
+
+
+	goto test5_noFail;
+test5_cleanup:
+	fail = true;
+test5_noFail:
+
+	free(tmp); tmp = NULL;
+
+	if (close_file(file, false) != fseNoError)
+		fail = true;
+
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else {
+		puts("failed!");
+		failed++;
+	}
+
 }
 
 

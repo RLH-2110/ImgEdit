@@ -27,6 +27,10 @@ fsFlags getAttributes(const char *path);
 
 
 
+/* 	turns file flags for stuff like fopen and turns them into a fsOpenFlags
+	note: this does NOT check if its valid. if the programmer puts in weird strings, the program wont care.
+*/
+fsOpenFlags extractOpenFlags(char const * fileFlags);
 
 /* opens the file, if it does not exist, it will be created*/
 fsError open_file(const char* filePath, char* fileFlags, FILE** output);

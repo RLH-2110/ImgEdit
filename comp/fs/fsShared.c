@@ -28,7 +28,8 @@ fsError write_file(FILE* file, const char* buffer, size_t count, uint32 location
 
 	/* seek to location, unless location is FS_CURR*/
 	if (location != FS_CURR)
-		fseek(file,location,SEEK_SET);
+		if (fseek(file,location,SEEK_SET) != 0)
+			return fseSeekError;
 	
 
 	errno = 0;
@@ -48,6 +49,50 @@ fsError write_file(FILE* file, const char* buffer, size_t count, uint32 location
 /* | OPENING | */
 /*  \#######/  */
 
+fsOpenFlags extractOpenFlags(char const * fileFlags){
+	fsOpenFlags output;
+	char const * curr;
+
+	if (fileFlags == NULL)
+		return fsOpenFlagsError;
+
+	output = 0;
+	curr = fileFlags;
+
+	while (*curr != '\0'){
+
+		switch(*curr){
+			case 'r': 
+				output |= fsOpenFlagsReading | fsOpenFlagsDontCreate;
+				break;
+
+			case 'a':
+			case 'w': 
+				output |= fsOpenFlagsWriting;
+				break;
+
+			case '+': 
+				output |= fsOpenFlagsReading | fsOpenFlagsWriting ;
+				break;
+
+			case 'x':
+				output |= fsOpenFlagsNoOverWriting;
+				break;
+
+			case 'b':
+				break;
+			
+			default:
+				fprintf(logOut,"extractOpenFlags: file flag '%c' is not recognized!\n", *curr);
+				
+		}
+
+		curr++;
+	}
+
+	return output;
+}
+
 
 /* fileFlags is the same as fopen!*/
 
@@ -56,9 +101,9 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 
 	FILE *file;
 	int flags;
+	fsOpenFlags extractedFileFlags;
 	bool create = false;
 	
-
 
 	if (!filePath || !fileFlags || !output){ /* if parameters are NULL */
 		fputs("Error: open_file got a does not take NULL\n",logOut);
@@ -73,8 +118,14 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	/* Get flags and filter out flags that wont work for us*/
 	flags = getAttributes(filePath);
 
+	extractedFileFlags = extractOpenFlags(fileFlags); 
 
-	if (flags == fsfNoFile && create == false && fileFlags[0] != 'r') { /*create file if it does not exist, unless we read only*/
+	if ((extractedFileFlags & fsOpenFlagsNoOverWriting) != 0 && flags != fsfNoFile){
+		fprintf(logOut,"open_file: File %s already exists!\n",filePath);
+		return fseFileAlreadyExists;
+	}
+
+	if (flags == fsfNoFile && create == false && (extractedFileFlags & fsOpenFlagsDontCreate) == 0) { /*create file if it does not exist, unless we read only*/
 		create = true;
 		file = fopen(filePath,fileFlags);
 
@@ -102,13 +153,14 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	}
 
 
-	if ((flags & fsfReadAccess) == 0 && (fileFlags[0] == 'r' || fileFlags[1] == '+')){
+	/* check read access if reading is requested */
+	if ((flags & fsfReadAccess) == 0 && (extractedFileFlags & fsOpenFlagsReading) != 0){
 		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
 		return fseNoRead;
 	}
 
 	/* if we try to have write access, but dont have write acces.  DOES NOT TRIGGER IF THE FLAGS ARE fsfInvalid, because that likely means we will create the file later*/
-	if ((flags & fsfWriteAccess) == 0 && (fileFlags[0] == 'w' || fileFlags[0] == 'a' || fileFlags[1] == '+') && flags != fsfInvalid){
+	if ((flags & fsfWriteAccess) == 0 && (extractedFileFlags & fsOpenFlagsWriting) != 0 && flags != fsfInvalid){
 		fprintf(logOut,"Error: open_file has no write access to %s\n",filePath);
 		return fseNoWrite;
 	}
@@ -119,13 +171,10 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 	}
 
 open_file_skip_access_tests:
-	errno = 0;
 	file = fopen(filePath,fileFlags);
 
-	if (file == NULL /*|| errno != 0*/){
-		/*fprintf(logOut,"Error: open_file open error. errno: %d\n",errno);*/
+	if (file == NULL){
 		fputs("Error: open_file open error!",logOut);
-
 		return fseNoOpen;
 	}
 	
@@ -254,6 +303,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 */
 fsError read_file(FILE* file, char** buffer, size_t count, uint32 location){
 	
+	size_t countRead;	
 
 	if (file == NULL)
 		return fseNULLParam;
@@ -261,12 +311,15 @@ fsError read_file(FILE* file, char** buffer, size_t count, uint32 location){
 
 	/* seek to location, unless location is FS_CURR*/
 	if (location != FS_CURR)
-		fseek(file,location,SEEK_SET);
+		if (fseek(file,location,SEEK_SET) != 0)
+			return fseSeekError;
+
 	
 
 	errno = 0;
-	if (fread(*buffer,1, count, file ) != count){
-		fprintf(logOut,"Error: read_file write error. errno: %d\n",errno);
+	countRead = fread(*buffer,1, count, file);
+	if (countRead != count || errno != 0){
+		fprintf(logOut,"Error: read_file write error. errno: %d\t| bytes read: %d\t | bytes expected: %d\n",errno,countRead,count);
 		return fseWrongRead;
 	}
 

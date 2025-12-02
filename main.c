@@ -22,6 +22,7 @@ int main(int argc, char* argv[]){
 	setup();
 
 	get_args(argc, argv);
+	argumentFlags |= flags_debugArgs; /* set the argument debug mode (because we dont have the actual behavior yet.) (remove this line later)*/
 
 	if (logFile != NULL)
 		set_log_file();
@@ -29,6 +30,20 @@ int main(int argc, char* argv[]){
 
 	fprintf(logOut,"%s version %sR%c %s\n",argv[0],VERSION,GRAPHICS_CHR,OS_STRING);
 
+
+	if ((argumentFlags & flags_debugArgs) != 0)
+		goto main_argumentTesting;
+
+	close_log_file();
+	return 0;
+
+
+
+
+
+
+/* only reachable with goto*/
+main_argumentTesting:
 
 
 	fprintf(logOut,"(debug) argument flag variable (hex): %x\n",argumentFlags);
@@ -41,8 +56,9 @@ int main(int argc, char* argv[]){
 
 		for (i = 0;i < inputFilesC;i++)
 			fprintf(logOut,"%s ",inputFiles[i]);
-		fputs("\n",logOut); /* new line*/
+		fputs("\n",logOut); 
 	}
+	
 
 
 

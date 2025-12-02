@@ -722,7 +722,7 @@ void test6(){ /* own functions used: get_args*/
 		rewind(scrOut); /* go to start of file again, so new stuff overwrites the old one */
 	}
 
-
+	/* argumentFlags |= flags_debugArgs; */ /* use this to get the current debug behavior*/
 	printf("TEST IS NOT YET DONE!!! ADD CASES HERE!\n");
 
 	logFile = oldLogFile;

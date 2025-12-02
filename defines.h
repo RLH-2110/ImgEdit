@@ -83,8 +83,7 @@ typedef short bool;
 #define flags_o 0x02 /* 0b0000_0000_0000_0010 */
 #define flags_i 0x04 /* 0b0000_0000_0000_0100 */
 #define flags_l 0x08 /* 0b0000_0000_0000_1000 */
-
-
+#define flags_debugArgs 0x8000  /* 0b1000_0000_0000_0000 (can not be set via command line args, only set via tests.c) */
 
 /* /#########\ */
 /*|ERROR TYPES|*/

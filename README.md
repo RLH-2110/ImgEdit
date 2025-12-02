@@ -7,7 +7,7 @@
 
 When the rewrite is done, it will be able to create floppy disk images with FAT 12.
 
-My goal is to make this compatible with Linux, Windows NT+, MS-DOS and Haiku
+My goal is to make this compatible with Linux, Windows NT, MS-DOS and Haiku
 
 Here is what you need to do to compile the source for the different operating systems.
 Linux and Haiku, Make and GCC are usually preinstalled, on Windows you have to install them yourself or compile my code manually with your own compiler.  

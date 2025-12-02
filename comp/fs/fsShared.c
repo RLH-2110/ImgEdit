@@ -1,55 +1,12 @@
 #include "../../defines.h"
 #include "../../setup.h"
+#include "../../int.h"
+
 #include "fs.h" /* to get the isDirectory definition*/
 
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
-
-
-/*  /########\  */
-/* | Creating | */
-/*  \########/  */
-
-/* creates a file and checks for write access */
-fsError create_file(const char* filePath, FILE **out_file){
-	
-	int flags;
-
-	/* Create file */
-
-	if (getAttributes(filePath) & fsfIsDirectory){
-		fputs("error: create_file error. File is a directory!\n",logOut);
-		return fseIsDirectory;
-	}
-
-	errno = 0;
-	*out_file = fopen(filePath,"w");
-
-	if (*out_file == NULL){
-		fprintf(logOut,"Error: create_file open error. errno: %d\n",errno);
-		return fseNoOpen;
-	}
-
-	flags = getAttributes(filePath);
-
-
-	if ((flags & fsfReadAccess) == 0){
-		fprintf(logOut,"Error: create_file has no read access to %s\n",filePath);
-		return fseNoRead;
-	}
-
-	if ((flags & fsfWriteAccess) == 0){
-		fprintf(logOut,"Error: create_file has no write access to %s\n",filePath);
-		return fseNoWrite;
-	}
-
-	return fseNoError;
-}
-
-
-
-
 
 
 
@@ -59,37 +16,26 @@ fsError create_file(const char* filePath, FILE **out_file){
 
 
 
-
-
-
-
-fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
+/* writes COUNT bytes from BUFFER and write them in FILE at LOCATION.
+	If LOCATION is FS_CURR (-1) then it writes at the current position. 
+*/
+fsError write_file(FILE* file, const char* buffer, size_t count, uint32 location){
 	
-	FILE *file;
 
-	if (getAttributes(filePath) & fsfIsDirectory){
-		fputs("Error: write_file error. File is a directory!\n",logOut);
-		return fseIsDirectory;
-	}
+	if (file == NULL)
+		return fseNULLParam;
+	
 
-	errno = 0;
-	file = fopen(filePath,"w");
-
-	if (file == NULL){
-		fprintf(logOut,"Error: write_file open error. errno: %d\n",errno);
-		return fseNoOpen;
-	}
+	/* seek to location, unless location is FS_CURR*/
+	if (location != FS_CURR)
+		if (fseek(file,location,SEEK_SET) != 0)
+			return fseSeekError;
+	
 
 	errno = 0;
-	if (fwrite(buffer,1,bufferSize,file) != bufferSize){
+	if (fwrite(buffer,1,count,file) != count){
 		fprintf(logOut,"Error: write_file write error. errno: %d\n",errno);
 		return fseWrongWrite;
-	}
-
-	errno = 0;
-	if (fclose(file) != 0){
-		fprintf(logOut,"Error: write_file close error. errno: %d\n",errno);
-		return fseNoClose;
 	}
 
 	return fseNoError;
@@ -103,30 +49,118 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize){
 /* | OPENING | */
 /*  \#######/  */
 
+fsOpenFlags extractOpenFlags(char const * fileFlags){
+	fsOpenFlags output;
+	char const * curr;
+
+	if (fileFlags == NULL)
+		return fsOpenFlagsError;
+
+	output = 0;
+	curr = fileFlags;
+
+	while (*curr != '\0'){
+
+		switch(*curr){
+			case 'r': 
+				output |= fsOpenFlagsReading | fsOpenFlagsDontCreate;
+				break;
+
+			case 'a':
+			case 'w': 
+				output |= fsOpenFlagsWriting;
+				break;
+
+			case '+': 
+				output |= fsOpenFlagsReading | fsOpenFlagsWriting ;
+				break;
+
+			case 'x':
+				output |= fsOpenFlagsNoOverWriting;
+				break;
+
+			case 'b':
+				break;
+			
+			default:
+				fprintf(logOut,"extractOpenFlags: file flag '%c' is not recognized!\n", *curr);
+				
+		}
+
+		curr++;
+	}
+
+	return output;
+}
 
 
+/* fileFlags is the same as fopen!*/
 
 
 fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 
 	FILE *file;
 	int flags;
-
+	fsOpenFlags extractedFileFlags;
+	bool create = false;
 	
+
 	if (!filePath || !fileFlags || !output){ /* if parameters are NULL */
 		fputs("Error: open_file got a does not take NULL\n",logOut);
+		return fseLogic;
+	}
+
+	if (fileFlags[0] == '\0'){
+		fputs("Error: open_file needs file flags!\n",logOut);
 		return fseLogic;
 	}
 
 	/* Get flags and filter out flags that wont work for us*/
 	flags = getAttributes(filePath);
 
-	if ((flags & fsfReadAccess) == 0 && fileFlags[0] == 'r'){
+	extractedFileFlags = extractOpenFlags(fileFlags); 
+
+	if ((extractedFileFlags & fsOpenFlagsNoOverWriting) != 0 && flags != fsfNoFile){
+		fprintf(logOut,"open_file: File %s already exists!\n",filePath);
+		return fseFileAlreadyExists;
+	}
+
+	if (flags == fsfNoFile && create == false && (extractedFileFlags & fsOpenFlagsDontCreate) == 0) { /*create file if it does not exist, unless we read only*/
+		create = true;
+		file = fopen(filePath,fileFlags);
+
+		/* create a new file */
+		if (file == NULL){
+			fputs("Error: open_file create file error!",logOut);
+			return fseNoOpen;
+		}
+		if (fclose(file) != 0){
+			fputs("Error: open_file create file close error!",logOut);
+			return fseNoOpen;
+		}
+		
+		flags = getAttributes(filePath);
+
+	}
+
+	if (flags & fsfInvalid) {
+		fprintf(logOut, "Error: open_file found file with invalid attibutes!");
+
+		if (fileFlags[0] == 'r')
+			return fseNoRead;
+		else
+			return fseNoWrite;
+	}
+
+
+	/* check read access if reading is requested */
+	if ((flags & fsfReadAccess) == 0 && (extractedFileFlags & fsOpenFlagsReading) != 0){
 		fprintf(logOut,"Error: open_file has no read access to %s\n",filePath);
 		return fseNoRead;
 	}
 
-	if ((flags & fsfWriteAccess) == 0 && fileFlags[0] == 'w'){
+	/* if we try to have write access, but dont have write acces.  DOES NOT TRIGGER IF THE FLAGS ARE fsfInvalid, because that likely means we will create the file later*/
+	if ((flags & fsfWriteAccess) == 0 && (extractedFileFlags & fsOpenFlagsWriting) != 0 && flags != fsfInvalid){
 		fprintf(logOut,"Error: open_file has no write access to %s\n",filePath);
 		return fseNoWrite;
 	}
@@ -136,11 +170,11 @@ fsError open_file(const char* filePath, char* fileFlags, FILE** output){
 		return fseIsDirectory;
 	}
 
-	errno = 0;
+open_file_skip_access_tests:
 	file = fopen(filePath,fileFlags);
 
-	if (file == NULL || errno != 0){
-		fprintf(logOut,"Error: open_file open error. errno: %d\n",errno);
+	if (file == NULL){
+		fputs("Error: open_file open error!",logOut);
 		return fseNoOpen;
 	}
 	
@@ -249,7 +283,7 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 
 	if (buff[TEXT_READ_BUFF_SIZE-2] != '\n' && buff[TEXT_READ_BUFF_SIZE-2] != '\0' && !feof(reader->file)) { /* not the last line, and does not end with \n and its not the end of file*/
 		/* In this case our buffer is probably too small.*/
-		fprintf(logOut, "Error: read_line function can't read line %d! it does not fit in buffer of size %d!\n", reader->currentLine + 1, TEXT_READ_BUFF_SIZE);
+		fprintf(logOut, "Error: read_line function can't read line %ld! it does not fit in buffer of size %d!\n", reader->currentLine + 1, TEXT_READ_BUFF_SIZE);
 	
 		errno = ERANGE;
 		return NULL;
@@ -264,6 +298,33 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 
 
 
+/* reads COUNT bytes into BUFFER from LOCATION in FILE
+	If LOCATION is FS_CURR (-1) then it reads at the current position. 
+*/
+fsError read_file(FILE* file, char** buffer, size_t count, uint32 location){
+	
+	size_t countRead;	
+
+	if (file == NULL)
+		return fseNULLParam;
+	
+
+	/* seek to location, unless location is FS_CURR*/
+	if (location != FS_CURR)
+		if (fseek(file,location,SEEK_SET) != 0)
+			return fseSeekError;
+
+	
+
+	errno = 0;
+	countRead = fread(*buffer,1, count, file);
+	if (countRead != count || errno != 0){
+		fprintf(logOut,"Error: read_file write error. errno: %d\t| bytes read: %d\t | bytes expected: %d\n",errno,countRead,count);
+		return fseWrongRead;
+	}
+
+	return fseNoError;
+}
 
 
 
@@ -304,7 +365,7 @@ fsError close_file(FILE* file,bool log){
 
 
 /* Closes the log file, if it exists. */
-fsError close_log_file(){
+fsError close_log_file(void){
 	
 	if (logOut != stdout){
 

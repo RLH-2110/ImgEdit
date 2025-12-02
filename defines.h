@@ -2,11 +2,15 @@
 #define mainH
 
 #include <stdio.h>
+#include "int.h"
+
 
 /* /#################\ */
 /*|MAIN.C GLOBAL STUFF|*/
 /* \#################/ */
 #include "setup.h"
+
+
 
 /* /###########\ */
 /*|VERSION STUFF|*/
@@ -27,6 +31,7 @@ C = Custom Selection (If compiled with certain functions turned off, For example
 #else
 #define GRAPHICS_CHR 'L'
 #endif
+
 
 
 /* /######\ */
@@ -57,14 +62,18 @@ typedef short bool;
 #ifndef true
 #define true 1
 #define false 0
+#define always_false false
+#define always_true false
 #endif
 
+#define FS_CURR -1
 
 /*/#####\*/
 /*|sizes|*/
 /*\#####/*/
 
 #define TEXT_READ_BUFF_SIZE 100 /* CANT BE SMALLER THAN 2! NOTE: this number is ment to be 1 bigger than needed! */
+
 
 
 /*/#####\*/
@@ -75,20 +84,40 @@ typedef short bool;
 #define flags_i 0x04 /* 0b0000_0000_0000_0100 */
 #define flags_l 0x08 /* 0b0000_0000_0000_1000 */
 
+
+
 /* /#########\ */
 /*|ERROR TYPES|*/
 /* \#########/ */
-typedef enum {fseNoError, fseNoOpen, fseNoClose, fseWrongWrite, fseIsDirectory, fseIsFile, fseNoRead, fseNoWrite, fseMemory, fseLogic, fseNoCreate, fseNoDelete, fseBufferSize} fsError; 
+typedef enum {
+	fseNoError, fseNoOpen, fseNoClose,	fseWrongWrite, fseWrongRead,
+	fseIsDirectory,	 fseIsFile, fseNoRead, fseNoWrite, fseMemory, fseLogic,
+	fseNoCreate, fseNoDelete, fseBufferSize, fseNULLParam, fseSeekError, 
+	fseInternalFSError, fseFileAlreadyExists
+} fsError; 
+
 
 /* /###\ */
 /*|Enums|*/
 /* \###/ */
+
+/* for metadata about files*/
 typedef enum {	
-	fsfInvalid		= 0x00,
+	fsfInvalid		= 0x00, 
 	fsfReadAccess 	= 0x01,
 	fsfWriteAccess 	= 0x02,
-	fsfIsDirectory	= 0x04
+	fsfIsDirectory	= 0x04,
+	fsfNoFile		= 0x80
 } fsFlags; 
+
+/* for fopen file flags (like rb+)*/
+typedef enum {
+	fsOpenFlagsError			= 0x00,
+	fsOpenFlagsReading			= 0x01,
+	fsOpenFlagsWriting			= 0x02,
+	fsOpenFlagsDontCreate		= 0x04,
+	fsOpenFlagsNoOverWriting	= 0x08
+} fsOpenFlags;
 
 
 #endif

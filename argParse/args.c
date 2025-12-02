@@ -61,6 +61,7 @@ void append_arg(char *arg, char ***list, int *listC){
 
 void get_args(int argc, char*argv[]){
 	
+
 	int argI = 1; /* argument index, starts at first argument, ignores filename */
 	int i;
 	int result;
@@ -116,13 +117,14 @@ void get_args(int argc, char*argv[]){
 				break;
 
 			case 'h':
+
 				argumentFlags += flags_h;
 
 				print_help(argv[0]);
 				break;
 
 			default:
-				printf("Error: unrecognized parameter: %s\n",argv[argI]);
+				fprintf(scrOut,"Error: unrecognized parameter: %s\n",argv[argI]);
 				print_help(argv[0]);
 				error_exit(1);
 				
@@ -150,11 +152,11 @@ int fetch_flag_arg_count(int argc, char*argv[], int firstIndex){
 }
 
 void print_help(char* argv0){
-	printf("Usage: %s [-o <output>] [-h] [-i <inputs>...]\n",argv0);
-	puts("  -o <output>: <output> specifies the name of the output file");
-	puts("  -i <inputs>: <inputs> specifies the input files, can be one or multiple");
-	puts("  -h: shows this help screen");
-	puts("  -l: <logfile>: write logs into <logfile> file");
+	fprintf(scrOut,"Usage: %s [-o <output>] [-h] [-i <inputs>...]\n",argv0);
+	fputs("  -o <output>: <output> specifies the name of the output file\n",scrOut);
+	fputs("  -i <inputs>: <inputs> specifies the input files, can be one or multiple\n",scrOut);
+	fputs("  -h: shows this help screen\n",scrOut);
+	fputs("  -l: <logfile>: write logs into <logfile> file\n",scrOut);
 }
 
 

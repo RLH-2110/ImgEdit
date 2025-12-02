@@ -21,7 +21,9 @@
 
 /* I would be very surprised if the program compiles in any scenario where OS_STRING is not set. */
 #ifndef OS_STRING
-#define OS_STRING "UNKNOWN OS" 
+/* we got no idea what it is, so lets assume its a POSIX based system.*/
+#define OS_STRING "UNKOWN OS"
+#define OS_POXIX
 #endif
 
 

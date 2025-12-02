@@ -5,6 +5,7 @@
 #include <errno.h>
 
 #include "../argParse/flags.h"
+#include "../argParse/args.h"
 #include "../comp/fs/fs.h"
 #include "../compat.h"
 #include "../str.h"
@@ -59,6 +60,20 @@ void critical_test_fail(){
 	exit(1);
 }
 
+void critical_fail(){
+	printf("Critical failure!\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
+	close_log_file();
+	exit(1);
+}
+
+
+/*	notes:
+
+	the extractOpenFlags will not have its own tests.
+
+*/
+
+/* might become unused. it was inteded to be used for calling the app with SYSTEM() and checking the results.*/
 char* set_flags(CALLER_FREES char *result, const char *flags){
 
 
@@ -88,8 +103,8 @@ char* set_flags(CALLER_FREES char *result, const char *flags){
 	return result;
 }
 
-void test0(){ /* TEST 0 */
-		fputs("testing strcat_c... ",stdout);
+void test0(){ /* TEST 0 */ /* own functions used: strcat_c */
+		fputs("tst0 strcat_c...                 ",stdout);
 
 
 		sInputA = "hallo";
@@ -123,7 +138,7 @@ void test0(){ /* TEST 0 */
 			critical_test_fail();
 
 
-		puts(" passed!");
+		puts("passed!");
 		passed++;
 }
 
@@ -132,27 +147,37 @@ void test0(){ /* TEST 0 */
 
 
 
-
-
-void test1(){ /* TEST 1 */
-	fputs("testing file writing and reading... ",stdout);
+void test1(){ /* TEST 1 */ /* own functions used: getAttributes, open_file, write_file, close_file, create_lineRead, read_line*/
+	fputs("tst1 basic file r/w...           ",stdout);
 
 	fail = false;
 
 	remove("out.txt");
-	if (getAttributes("out.txt") != 0) {
-		puts("test can't commence!");
+	if (getAttributes("out.txt") != fsfNoFile) {
 		critical_test_fail();
 		return;
 	}
 
-	error = fseNoError;
-	/* creating and writing the file*/
+	/* open and creates file */
 	{
-		error =  write_file("out.txt", "Hello World\n12", 15);
+		error = open_file("out.txt", "w", &file);
 		if (error != fseNoError)
 			goto test1_cleanup;
 	}
+
+	/* creating and writing the file*/
+	{
+		error =  write_file(file, "Hello World\n12", 15,FS_CURR);
+		if (error != fseNoError)
+			goto test1_cleanup;
+	}
+
+	/* closes file */
+	{
+		if (close_file(file,false) != fseNoError)
+			goto test1_cleanup;
+	}
+
 
 	/* Opens the file and prepares the reader*/
 
@@ -215,18 +240,77 @@ void test1(){ /* TEST 1 */
 		free(tmp); tmp = NULL;
 	}
 
+
+
+	/* read text with read_file */
+	{
+		#define TEST_TMP_BUFFER_SIZE 20
+		tmp = malloc(TEST_TMP_BUFFER_SIZE);
+		
+		
+		if (read_file(NULL, &tmp, 5, 0) != fseNULLParam) /* check NULL error */ 
+			goto test1_cleanup;
+		
+		/* this test does not work on Haiku, but it does work on windows. since it worked on windows I know that we can catch invalid seeks. I may rewrite this later*/
+		/* if (read_file(file, &tmp, 5, (uint32)-2) != fseSeekError)*/ /*check for seek error */
+		/*	goto test1_cleanup;*/
+		
+
+
+		sExpected = "Hello";
+		if (read_file(file, &tmp, 5, 0) != fseNoError) /* read "Hello" from the file*/
+			goto test1_cleanup;
+
+		tmp[5] = '\0'; /*fix up not reading a terminator*/
+		if (strcmp(tmp,sExpected) != 0){
+			printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+			goto test1_cleanup;
+		}
+		
+
+
+		sExpected = " World\n";
+		if (read_file(file, &tmp, 7, FS_CURR) != fseNoError) /* read " World\n" from the file using the current position*/
+			goto test1_cleanup;
+
+		tmp[7] = '\0'; /*fix up not reading a terminator*/
+		if (strcmp(tmp,sExpected) != 0){
+			printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+			goto test1_cleanup;
+		}
+
+
+		tmp[0] = '\0'; /*set other data, so we can see that we overwrite it correctly again*/
+		sExpected = "Hello";
+		if (read_file(file, &tmp, 5, 0) != fseNoError) /* read "Hello" again, just to be sure we can seek*/
+			goto test1_cleanup;
+
+		tmp[5] = '\0'; /*fix up not reading a terminator*/
+		if (strcmp(tmp,sExpected) != 0){
+			printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+			goto test1_cleanup;
+		}
+
+		#undef TEST_TMP_BUFFER_SIZE
+	}
+
+	/* check if open_file respects the x flag*/
+	if (open_file("out.txt","wbx+",&file) != fseFileAlreadyExists)
+		goto test1_cleanup;
+
 	goto test1_noFail;
 test1_cleanup:
 	fail = true;
 test1_noFail:
 
+	free(tmp); tmp = NULL;
+	
 	if (reader != NULL)
 		if (close_file(reader->file, false) != fseNoError)
 			fail = true;
 	reader->file = NULL;
 
 	free(reader); reader = NULL;
-
 
 	if (!fail) {
 		puts("passed!");
@@ -237,28 +321,12 @@ test1_noFail:
 }
 
 
+void test1_5(char* argv0){ /* TEST 1.5 */ /* own functions used: getAttributes */
 
-void test2() /* TEST 2 */ {
-	fail = false;
-	fputs("testing getAttributes and mkdir/rmdir functions... ", stdout);
+	fputs("tst1.5 getAttributes...          ", stdout);
 
-	remove("out.txt");
-	if (getAttributes("out.txt") != 0)
+	if (getAttributes(argv0) == fsfNoFile || getAttributes(argv0) == fsfInvalid) /* test if the exe file we are currently running does not exists */
 		fail = true;
-
-	write_file("out.txt", "hi", 3);
-	if (getAttributes("out.txt") != (fsfReadAccess | fsfWriteAccess))
-		fail = true;
-	remove("out.txt");
-	
-	make_dir("out.txt");
-	if (getAttributes("out.txt") != fsfIsDirectory)
-		fail = true;
-	remove_dir("out.txt");
-
-	if (getAttributes("out.txt") != 0)
-		fail = true;
-
 
 	if (!fail) {
 		puts("passed!");
@@ -271,54 +339,68 @@ void test2() /* TEST 2 */ {
 }
 
 
-void test3(){ /* TEST 3 */
+void test2() /* TEST 2 */ {  /* own functions used: getAttributes, open_file, write_file, close_file, make_dir, remove_dir*/
 	fail = false;
+	fputs("tst2 getAttributes & mk/rmdir... ", stdout);
 
-	fputs("testing create_file function... ",stdout);
-
-
-	remove("log.txt");
-	if (getAttributes("log.txt") != 0) {
-		skipped++;
-		puts("test can't commence!");
-		return;
-	}
-	
-
-	if (create_file("log.txt", &file) != fseNoError) 
+	remove("out.txt");
+	if (getAttributes("out.txt") != fsfNoFile)
 		fail = true;
-	
 
-	if (close_file(file, false) != fseNoError) 
-		fail = true;
-	file = NULL;
-	
+	/* create test file*/
+	{
 
-	/* chceck if file exists here */
-
-	if (getAttributes("log.txt") == 0) {
-		fail = true;
+		if (open_file("out.txt", "w", &file) != fseNoError)
+			goto test2_skip;
+		if (write_file(file, "hi", 3,FS_CURR) != fseNoError)
+			goto test2_skip;
+		if (close_file(file,true) != fseNoError)
+			goto test2_skip;
 	}
 
+	if (getAttributes("out.txt") != (fsfReadAccess | fsfWriteAccess))
+		fail = true;
+	remove("out.txt");
+	
+	/* create directory and check if it exists*/
+	make_dir("out.txt");
+	if (getAttributes("out.txt") != fsfIsDirectory)
+		fail = true;
 
-	if (!fail){
+	/* delete directory and check if it exists*/
+	remove_dir("out.txt");
+	if (getAttributes("out.txt") != fsfNoFile)
+		fail = true;
+
+
+	if (!fail) {
 		puts("passed!");
 		passed++;
-	}else{
+	}
+	else {
 		puts("failed!");
 		failed++;
 	}
+
+	return;
+
+	test2_skip:
+	failed++;
+	puts("Failed due to unrelated error");
+	return;
 }
 
 
-void test4(){ /* TEST 4 */
+
+
+void test3(){  /* own functions used: getAttributes, set_log_file, close_log_file, open_file, create_lineRead, read_line, close_file*/
 	fail = false;
 
-	fputs("testing file logging... ",stdout);
+	fputs("tst3 file logging...             ",stdout);
 
 	remove("log.txt");
 
-	if (getAttributes("log.txt") != 0) {
+	if (getAttributes("log.txt") != fsfNoFile) {
 		skipped++;
 		puts("test can't commence!");
 		return;
@@ -342,11 +424,11 @@ void test4(){ /* TEST 4 */
 		errno = 0;
 		if (open_file("log.txt","r",&file) != fseNoError){
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 		if (errno != 0){
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 
 		reader = create_lineRead(file);
@@ -361,17 +443,17 @@ void test4(){ /* TEST 4 */
 
 		if (errno != 0 || tmp == NULL) {
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 
 		if (strcmp(tmp,sExpected) != 0) {
 			fail = true;
-			goto test4_cleanup;
+			goto test3_cleanup;
 		}
 
 
 
-	test4_cleanup:
+	test3_cleanup:
 
 		free(tmp); tmp = NULL;
 
@@ -395,13 +477,13 @@ void test4(){ /* TEST 4 */
 	}
 }
 
-void test5() { 
-	fputs("testing file writing and reading with buffers bigger than TEXT_READ_BUFF_SIZE... ",stdout);
+void test4() {  /* own functions used: getAttributes, write_file, open_file, create_lineRead, read_line, close_file*/
+	fputs("tst4 file r/w with big buffer... ",stdout);
 	fail = false;
 
 	remove("out.txt");
-	if (getAttributes("out.txt") != 0) {
-		puts("test can't commence!");
+	if (getAttributes("out.txt") != fsfNoFile) {
+		puts("skipped due to error");
 		skipped++;
 		return;
 	}
@@ -436,9 +518,16 @@ void test5() {
 	error = fseNoError;
 	/* creating and writing the file*/
 	{
-		error =  write_file("out.txt", sInputA, strlen(sInputA)+1);
+
+		if (open_file("out.txt","w",&file) != fseNoError)
+			goto test4_cleanup;
+
+		error =  write_file(file, sInputA, strlen(sInputA)+1,-1);
 		if (error != fseNoError)
-			goto test5_cleanup;
+			goto test4_cleanup;
+
+		if (close_file(file,false) != fseNoError)
+			goto test4_cleanup;
 	}
 
 	/* Opens the file and prepares the reader*/
@@ -446,10 +535,10 @@ void test5() {
 	{
 		errno = 0;
 		if (open_file("out.txt", "r", &file) != fseNoError) 
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		if (errno != 0) 
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		reader = create_lineRead(file);
 	}
@@ -463,10 +552,10 @@ void test5() {
 		tmp = read_line(reader, 1);
 
 		if (tmp == NULL || errno != 0)
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		if (strcmp(tmp,sExpected) != 0)
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		free(tmp); tmp = NULL;
 	}
@@ -478,15 +567,15 @@ void test5() {
 		tmp = read_line(reader, 2);
 
 		if (errno != ERANGE)
-			goto test5_cleanup;
+			goto test4_cleanup;
 
 		free(tmp); tmp = NULL;
 	}
 
-	goto test5_noFail;
-test5_cleanup:
+	goto test4_noFail;
+test4_cleanup:
 	fail = true;
-test5_noFail:
+test4_noFail:
 
 	if (reader != NULL)
 		if (close_file(reader->file, false) != fseNoError)
@@ -509,13 +598,152 @@ test5_noFail:
 
 }
 
-void test6() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
-	puts("TODO: add more tests! like a test for argsparse");
+void test5(){
+	fputs("tst5 segmented writing...        ",stdout);
+	fail = false;
+
+	remove("out.txt");
+	if (open_file("out.txt","wb+",&file) != fseNoError)
+		goto test5_cleanup;
+
+	sInputA = "hello ";
+	sInputB = "World\n";
+	sInputC = "It a Test!";
+
+	error =  write_file(file, sInputB, strlen(sInputB),strlen(sInputA)); /* write World after where we excpect hello*/
+	if (error != fseNoError)
+		goto test5_cleanup;
+
+	error =  write_file(file, sInputA, strlen(sInputA),0); /* write hello before world*/
+	if (error != fseNoError)
+		goto test5_cleanup;
+
+	error =  write_file(file, sInputC, strlen(sInputC),strlen(sInputA)+strlen(sInputB)); /* write the last line */
+	if (error != fseNoError)
+		goto test5_cleanup;
+
+	tmp = malloc(strlen(sInputA)+strlen(sInputB)+strlen(sInputC)+1);
+	read_file(file,&tmp,strlen(sInputA)+strlen(sInputB)+strlen(sInputC),0);
+	tmp[strlen(sInputA)+strlen(sInputB)+strlen(sInputC)] = '\0';
+
+	sExpected = "hello World\nIt a Test!";
+	if (strcmp(tmp,sExpected) != 0){
+		printf("\nexpected: %s\ngot: %s\n",sExpected,tmp);
+		goto test5_cleanup;
+	}
+
+
+	goto test5_noFail;
+test5_cleanup:
+	fail = true;
+test5_noFail:
+
+	free(tmp); tmp = NULL;
+
+	if (close_file(file, false) != fseNoError)
+		fail = true;
+
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else {
+		puts("failed!");
+		failed++;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/*  /--------------------------------------\ */
+/* | SCREEN IS REDIRECTED FROM HERE ONE OUT |*/
+/*  \--------------------------------------/ */
+
+
+
+
+void test6(){ /* own functions used: get_args*/
+
+	char* oldLogFile;
+	int argc;
+	char** argv;
+
+
+	fputs("tst6 argument parseing...        ",stdout);
+	fail = false;
+
+	/* backup old logging string */
+	oldLogFile = logFile;
+
+
+	/* imgEdit -h */
+	{
+		argc = 2;
+		argv = malloc(argc*sizeof(void*)); /* argument count * size of pointer*/
+
+		if (argv == NULL)
+			oom();
+
+		argv[0] = "ImgEdit";
+		argv[1] = "-h";
+		
+		/* reset variables that may be set*/
+		argumentFlags = 0; /* the flags that are set with the command line! */
+		inputFiles = NULL; 
+		inputFilesC = 0; /* list of how many filenames there are in inputFiles */
+		outputFile = NULL;
+		logFile = NULL;
+
+		get_args(argc,argv);
+
+		sExpected = "Usage:";
+		sInputA = malloc(strlen(sExpected)+1);
+		if (sInputA == NULL)
+			oom();
+
+		rewind(scrOut); /* go to start of file */
+		fgets(sInputA,strlen(sExpected)+1,scrOut);  /* read the output */
+
+		if (strcmp(sInputA,sExpected) != 0)
+			fail = true;
+		
+		printf("\nexpected: %s\tgot: %s\n",sExpected,sInputA);
+
+		free(argv); argv = NULL;
+		rewind(scrOut); /* go to start of file again, so new stuff overwrites the old one */
+	}
+
+
+	printf("TEST IS NOT YET DONE!!! ADD CASES HERE!\n");
+
+	logFile = oldLogFile;
+
+	if (!fail) {
+		puts("passed!");
+		passed++;
+	}
+	else {
+		puts("failed!");
+		failed++;
+	}
+}
+
+void test7() { /* THIS TEST DOES NOT YET COUNT TO THE TEST COUNTER! */
+	puts("TODO: add more tests!");
 
 
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
 	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
 	setup();
@@ -526,11 +754,30 @@ int main(){
 
 	test0();
 	test1();
+	test1_5(argv[0]);
 	test2();
 	test3();
 	test4();
 	test5();
+
+	fputs("\nredirecting screen to src.txt... ",stdout);
+
+
+	if(open_file("src.txt","w+", &scrOut) != fseNoError){
+		puts("failed!\nWe can not proceed!\n\n");
+		scrOut = stdout;
+		critical_fail();
+	}else
+		puts("success\n\n");
+	
+
+	/*TODO: Test open_file to make sure it can do r,w,a,w+ and r+*/
+
 	test6();
+	test7();
+
+	if (scrOut != stdout)
+		close_file(scrOut,false);
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS,skipped,NUM_TESTS);
 	close_log_file();

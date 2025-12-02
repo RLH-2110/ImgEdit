@@ -1,5 +1,5 @@
 #ifndef fsH
-#define fsh
+#define fsH
 
 #include <stdio.h>
 #include "../../defines.h"
@@ -15,6 +15,8 @@ fsError make_dir(const char* path);
 /* removes directory */
 fsError remove_dir(const char* path);
 
+
+
 /* gets file/directory flags */
 /*
 	If its a  directory ONLY fsfIsDirectory is set!
@@ -23,13 +25,28 @@ fsError remove_dir(const char* path);
 */
 fsFlags getAttributes(const char *path);
 
-/* creates a file and checks for write access, then closes the file*/
-fsError create_file(const char* filePath, FILE **out_file);
 
-/* Opens file and stores it in output*/
+
+/* 	turns file flags for stuff like fopen and turns them into a fsOpenFlags
+	note: this does NOT check if its valid. if the programmer puts in weird strings, the program wont care.
+*/
+fsOpenFlags extractOpenFlags(char const * fileFlags);
+
+/* opens the file, if it does not exist, it will be created*/
 fsError open_file(const char* filePath, char* fileFlags, FILE** output);
 
-fsError write_file(const char* filePath, const char* buffer, size_t bufferSize);
+
+/* writes COUNT bytes from BUFFER and write them in FILE at LOCATION.
+	If LOCATION is FS_CURR (-1) then it writes at the current position. 
+*/
+fsError write_file(FILE* file, const char* buffer, size_t count, uint32 location);
+
+/* reads COUNT bytes into BUFFER from LOCATION in FILE
+	If LOCATION is FS_CURR (-1) then it reads at the current position. 
+*/
+fsError read_file(FILE* file, char** buffer, size_t count, uint32 location);
+
+
 
 
 
@@ -44,11 +61,18 @@ fsError write_file(const char* filePath, const char* buffer, size_t bufferSize);
 CALLER_FREES char* read_line(lineRead *reader, long line);
 
 
+
+
+
+
 /* Closes the log file, if it exists. */
-fsError close_log_file();
+fsError close_log_file(void);
 
 /* closes file, if its not NULL. Logs if log is non zero, otherwhise it wont log*/
 fsError close_file(FILE* file,bool log);
+
+
+
 
 
 /* initalizes and lineRead struct*/

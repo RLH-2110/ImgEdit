@@ -62,8 +62,11 @@ typedef short bool;
 #ifndef true
 #define true 1
 #define false 0
+#endif
+
+#ifndef always_false
 #define always_false false
-#define always_true false
+#define always_true true
 #endif
 
 #define FS_CURR -1

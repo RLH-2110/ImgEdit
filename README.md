@@ -1,8 +1,8 @@
 > [!NOTE]
-> This progamm is currently being rewritten in C, you can see the old C# version in the [deprecated branch](https://github.com/RLH-2110/ImgEdit/tree/deprecated).
+> This progam is currently being rewritten in C, you can see the old C# version in the [deprecated branch](https://github.com/RLH-2110/ImgEdit/tree/deprecated).
 
 > [!WARNING]
-> This readme is not compleate
+> This readme is not complete
 
 
 When the rewrite is done, it will be able to create floppy disk images with FAT 12.
@@ -65,5 +65,21 @@ GCC for Windows: https://www.mingw-w64.org/
         </tr>
     </tbody>
 </table>
+
+# Potential Build Errors
+
+## COMPNT / NTTEST
+
+### The name specified is not recognized
+If you get this error:
+```
+The name specified is not recognized as an
+internal or external command, operable program or batch file.  
+```
+  
+It means wcl is not found in your current cmd.  
+you can use an cmd from open watcom, that should have a path to wlc, you can find it on windows like this:  
+`Start -> Programs -> Open Watcom 2.0 C - C++ -> Build Enviroment`
+
 
 

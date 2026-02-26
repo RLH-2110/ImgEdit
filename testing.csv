@@ -1,0 +1,5 @@
+OS;Version;Last Test;Commit;Tests passed;tests failed;tests skipped
+Windows;Windows 11 24H2 (build 26100.7840);2026-02-26;284d3c5939389eb42cbab660cb2b027a733b4919;8;0;0
+Haiku;R1/Beta5 (X86_64);2026-02-26;284d3c5939389eb42cbab660cb2b027a733b4919;8;0;0
+DOS;DOS 6.22;2026-02-26;284d3c5939389eb42cbab660cb2b027a733b4919;8;0;0
+Windows;Windows NT 4.0 (Build 1381: Service Pack 1);2026-02-26;284d3c5939389eb42cbab660cb2b027a733b4919;8;0;0

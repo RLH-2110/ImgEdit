@@ -45,10 +45,10 @@ int main(int argc, char* argv[]){
 	}
 
 
-
+	#define EMPTY_STRING_MALLOC_SIZE 10
 	if (outputFile && inputFiles){ /* if both are not null */
-		str = malloc(10); /* must be malloc*/
-		for(i = 0;i < 10;i++)
+		str = malloc(EMPTY_STRING_MALLOC_SIZE); /* malloc an emptry string (will be resized) */
+		for(i = 0;i < EMPTY_STRING_MALLOC_SIZE;i++)
 			str[i] = 0;
 
 		for (i = 0;i < inputFilesC && str != NULL;i++){

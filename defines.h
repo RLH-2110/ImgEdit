@@ -82,10 +82,11 @@ typedef short bool;
 /*/#####\*/
 /*|FLAGS|*/
 /*\#####/*/
-#define flags_h 0x01 /* 0b0000_0000_0000_0001 */
-#define flags_o 0x02 /* 0b0000_0000_0000_0010 */
-#define flags_i 0x04 /* 0b0000_0000_0000_0100 */
-#define flags_l 0x08 /* 0b0000_0000_0000_1000 */
+#define flags_h 0x0001 /* 0b0000_0000_0000_0001 */
+#define flags_o 0x0002 /* 0b0000_0000_0000_0010 */
+#define flags_i 0x0004 /* 0b0000_0000_0000_0100 */
+#define flags_l 0x0008 /* 0b0000_0000_0000_1000 */
+#define flags_c 0x0010 /* 0b0000_0000_0001_0000 */
 
 
 

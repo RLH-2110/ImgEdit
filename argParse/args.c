@@ -3,6 +3,7 @@
 
 #include "../defines.h"
 #include "../setup.h"
+#include "../config.h"
 
 #include "flags.h"
 
@@ -123,6 +124,13 @@ void get_args(int argc, char*argv[]){
 				print_help(argv[0]);
 				break;
 
+			case 'c':
+
+				argumentFlags += flags_c;
+
+				print_config();
+				break;
+
 			default:
 				fprintf(scrOut,"Error: unrecognized parameter: %s\n",argv[argI]);
 				print_help(argv[0]);
@@ -157,6 +165,7 @@ void print_help(char* argv0){
 	fputs("  -i <inputs>: <inputs> specifies the input files, can be one or multiple\n",scrOut);
 	fputs("  -h: shows this help screen\n",scrOut);
 	fputs("  -l: <logfile>: write logs into <logfile> file\n",scrOut);
+	fputs("  -c: shows compiled configuration\n",scrOut);
 }
 
 

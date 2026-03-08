@@ -203,18 +203,18 @@ open_file_skip_access_tests:
 
 	returns: char pointer to the line. YOU HAVE TO FREE IT!
 
-	errnos: EINVAL, EIO, ENOMEM, ESPIPE, ERANGE
-
-	ERANGE 	is set when the buffer is too small to fit the line
-	ENOMEM 	is set when there is no memory
-	EINVAL 	is set when there is an invalid lineRead
-	EIO 	is set on an IO error
-	ESPIPE	is set when the line you tried to read it past the end of file
-
 	errnos: EINVAL, EIO, ENOMEM, ESPIPE
+
+	ENOMEM 	is set when there is not enough memory
+	EINVAL 	is set when there is an invalid lineRead (values are NULL)
+	EIO 	is set on an IO error
+	ESPIPE	requested line is past end-of-file or less than 0
 */
 CALLER_FREES char* read_line(lineRead *reader, long line){
-	char *buff;
+	char *buff, *rbuff;
+	size_t buffSize = TEXT_READ_BUFF_SIZE; /* See defines.h it should be 100.*/
+	long seekPos;
+	int chr;
 
 	if (reader == NULL){
 		fputs("Error: read_line does not take NULL!",logOut);
@@ -227,71 +227,116 @@ CALLER_FREES char* read_line(lineRead *reader, long line){
 		return NULL;
 	}
 
-	if (line < reader->currentLine){
-		if (fseek(reader->file,0,SEEK_SET) != 0){
-			fputs("Error: read_line failed seeking the begining of the file",logOut);
-			errno = EIO;
-			return NULL;
-		}
-		reader->currentLine = 0;
+	if (line < 0){
+		fputs("Error: read_line cant read a negative line!",logOut);
+		errno = ESPIPE;
+		return NULL;
 	}
 
-	buff = malloc(TEXT_READ_BUFF_SIZE); /* See defines.h it should be 100.*/
+	buff = malloc(buffSize); 
 	if (buff == NULL){
 		fputs("Error: read_line out of memory!",logOut);
 		errno = ENOMEM;
 		return NULL;
 	}
 
+
+	if (line < reader->currentLine){
+		if (fseek(reader->file,0,SEEK_SET) != 0){
+			fputs("Error: read_line failed seeking the begining of the file",logOut);
+			errno = EIO;
+			goto error_return;
+		}
+		reader->currentLine = 0;
+	}
+
+
+
 	/* wait till we are in the correct line*/
 	for (;reader->currentLine < line;reader->currentLine++){
-		buff[TEXT_READ_BUFF_SIZE - 2] = '\n'; /* set it to /n for a later test, it might get overwriten by \0 (good) or another char (bad)*/
-		buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read characters (first should NOT be NULL, second should be NULL*/
-		if (feof(reader->file)){
-			fputs("Error: read_line function cant reach the specefied line, it does not exist", logOut);
-			errno = ESPIPE; /* ESPIPE  = Illegal seek */
-			return NULL;
-		}
-		if (ferror(reader->file) || buff == NULL){
-			fputs("Error: read_line function had an IO error!",logOut);
-			errno = EIO;
-			return NULL;
-		}
 
-		if (buff[TEXT_READ_BUFF_SIZE - 2] != '\n' && buff[TEXT_READ_BUFF_SIZE - 2] != '\0') { /* if line was read (we already checked if its eof) and does not end in \n*/
-			/*if we are here, the buffer is too small to read the line. so we decrement the line, so it stays the same when we increment it during the loop. this allows us to go though the whole line*/
-			reader->currentLine--;
+		while(true){ /*runs until \n is found*/
+
+			chr = getc(reader->file); 
+			if (chr == '\n')
+				break; 
+
+			if (chr == EOF){
+
+				if (feof(reader->file)){
+					fputs("Error: read_line function cant reach the specefied line, it does not exist", logOut);
+					errno = ESPIPE; /* ESPIPE  = Illegal seek */
+					goto error_return;
+				}
+
+				if (ferror(reader->file)){
+					fputs("Error: read_line function had an IO error!",logOut);
+					errno = EIO;
+					goto error_return;
+				}
+
+			}
 		}
+	
 	}
 
 	/* We are in the correct line now !*/
+	seekPos = ftell(reader->file); /* in case we need to rewind to try again with a bigger buffer*/
+	if (seekPos == -1L){
+		fputs("Error: read_line can't read current file position!",logOut);
+		errno = EIO;
+		goto error_return;
+	}
 
-	buff[TEXT_READ_BUFF_SIZE - 1] = 'a'; /* set to dectect if we cant fit the line*/
-	buff[TEXT_READ_BUFF_SIZE - 2] = '\n'; /* set it to /n for a later test, it might get overwriten by \0 (good) or another char (bad)*/
-	buff = fgets( buff, TEXT_READ_BUFF_SIZE, reader->file ); /* read line */
-	if (feof(reader->file) && buff == NULL){
+	retry:
+	buff[buffSize - 1] = '\n'; /* set it to \n, to detect if this gets overwritten by \0*/ 
+	rbuff = fgets( buff, buffSize, reader->file ); /* read line */
+	
+	if (rbuff == NULL)
+		free(buff);
+	buff = rbuff;
+
+	if (buff == NULL && feof(reader->file)){
 		fputs("Error: read_line function cant reach the specefied line, it does not exist!",logOut);
 		errno = ESPIPE; /* ESPIPE  = Illegal seek */
-		return NULL;
+		goto error_return;
 	}
-	if (ferror(reader->file) || buff == NULL){
+	if (buff == NULL || ferror(reader->file)){
 		fputs("Error: read_line function had an IO error!",logOut);
 		printf("\n\t\terrno: %d\n",errno); /* errno 9 */
 		errno = EIO;
-		return NULL;
+		goto error_return;
 	}
 
-	if (buff[TEXT_READ_BUFF_SIZE-2] != '\n' && buff[TEXT_READ_BUFF_SIZE-2] != '\0' && !feof(reader->file)) { /* not the last line, and does not end with \n and its not the end of file*/
-		/* In this case our buffer is probably too small.*/
-		fprintf(logOut, "Error: read_line function can't read line %ld! it does not fit in buffer of size %d!\n", reader->currentLine + 1, TEXT_READ_BUFF_SIZE);
-	
-		errno = ERANGE;
-		return NULL;
+	if (buff[buffSize-1] != '\n' && !feof(reader->file)) { /* not the last line, and does not end with \n and its not the end of file*/
+		/* buffer is likely too small.*/
+		
+
+		buffSize += buffSize / 2;
+		rbuff = realloc(buff, buffSize); /* dynamically make the string size bigger if possible*/
+
+		if (rbuff == NULL){
+			fputs("Error: read_line out of memory!",logOut);
+			errno = ENOMEM;
+			goto error_return;
+		}
+		buff = rbuff;
+
+		if (fseek(reader->file,seekPos,SEEK_SET) != 0){
+			fputs("Error: read_line failed seeking the begining of the line!",logOut);
+			errno = EIO;
+			goto error_return;
+		}
+		goto retry;
 	}
 
 
 	reader->currentLine++;
 	return buff;
+
+	error_return:
+	free(buff);
+	return NULL;
 
 }
 
@@ -392,6 +437,7 @@ fsError close_log_file(void){
 
 
 /* initalizes and lineRead struct*/
+/* exits on memory error! does not check if file is NULL! */
 CALLER_FREES lineRead* create_lineRead(FILE* file){ 
 
 	lineRead *reader = malloc(sizeof(lineRead));

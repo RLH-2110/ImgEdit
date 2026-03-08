@@ -478,6 +478,9 @@ void test3(){  /* own functions used: getAttributes, set_log_file, close_log_fil
 }
 
 void test4() {  /* own functions used: getAttributes, write_file, open_file, create_lineRead, read_line, close_file*/
+	long line1Size,line2Size,line3Size;
+	long line3Start;
+
 	fputs("tst4 file r/w with big buffer... ",stdout);
 	fail = false;
 
@@ -489,29 +492,35 @@ void test4() {  /* own functions used: getAttributes, write_file, open_file, cre
 	}
 
 	
-	sInputA = malloc((TEXT_READ_BUFF_SIZE + 1)*2+5);
+	line1Size = TEXT_READ_BUFF_SIZE - 1;
+	line2Size = 3;
+	line3Size = TEXT_READ_BUFF_SIZE + 5;
+
+	sInputA = malloc(line1Size + line2Size + line3Size + 1);
 	if (sInputA == NULL)
 		oom();
 
 
 	/* part one: set the first long line of sInputA*/
-	for (i = 0; i < TEXT_READ_BUFF_SIZE - 2; i++)
+	for (i = 0; i < line1Size - 2; i++)
 		sInputA[i] = 'A';
-	sInputA[TEXT_READ_BUFF_SIZE - 2] = 'B';
-	sInputA[TEXT_READ_BUFF_SIZE - 1] = '\n';
+	sInputA[line1Size - 2] = 'B';
+	sInputA[line1Size - 1] = '\n';
 
 	/* part 2 set second line */
 
-	sInputA[TEXT_READ_BUFF_SIZE+0] = '1';
-	sInputA[TEXT_READ_BUFF_SIZE+1] = '2';
-	sInputA[TEXT_READ_BUFF_SIZE+2] = '\n';
-
+	sInputA[line1Size+0] = '1';
+	sInputA[line1Size+1] = '2';
+	sInputA[line1Size+2] = '\n';
+	line3Start = line1Size+3;
 
 	/* part 3 set last long line */
-	for (i = TEXT_READ_BUFF_SIZE + 3; i < (TEXT_READ_BUFF_SIZE + 3) + TEXT_READ_BUFF_SIZE - 2; i++)
+	for (i = line3Start; i < line3Start + line3Size - 2; i++)
 		sInputA[i] = 'A';
-	sInputA[(TEXT_READ_BUFF_SIZE + 3) + TEXT_READ_BUFF_SIZE - 2] = 'B';
-	sInputA[(TEXT_READ_BUFF_SIZE + 3) + TEXT_READ_BUFF_SIZE - 1] = '\0';
+	sInputA[line3Start + line3Size - 2] = 'B';
+	sInputA[line3Start + line3Size - 1] = '\0';
+
+
 
 
 
@@ -560,13 +569,29 @@ void test4() {  /* own functions used: getAttributes, write_file, open_file, cre
 		free(tmp); tmp = NULL;
 	}
 
+	/* read first line */
+	{
+		errno = 0;
+		tmp = read_line(reader, 1);
+
+		if (tmp == NULL || errno != 0)
+			goto test4_cleanup;
+
+		if (tmp[line1Size-2] != 'B')
+			goto test4_cleanup;
+
+		free(tmp); tmp = NULL;
+	}
+
 	/* read last line */
 	{
-		fputs("we expect an buffer error in line 3\n", logOut);
 		errno = 0;
 		tmp = read_line(reader, 2);
 
-		if (errno != ERANGE)
+		if (tmp == NULL || errno != 0)
+			goto test4_cleanup;
+
+		if (tmp[line3Size-2] != 'B')
 			goto test4_cleanup;
 
 		free(tmp); tmp = NULL;

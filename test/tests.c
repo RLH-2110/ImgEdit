@@ -572,7 +572,7 @@ void test4() {  /* own functions used: getAttributes, write_file, open_file, cre
 	/* read first line */
 	{
 		errno = 0;
-		tmp = read_line(reader, 1);
+		tmp = read_line(reader, 0);
 
 		if (tmp == NULL || errno != 0)
 			goto test4_cleanup;

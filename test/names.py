@@ -23,12 +23,12 @@ while (len(todoPaths) > 0):
         relativePath = ".."
     
     if len(name[0]) > 8 or len(name[0]) == 0:
-        print("{0} is not a valid filename in DOS!".format(relativePath));
+        print("{0} is not a valid filename in DOS!".format(os.path.split(todoPaths[0])[1]));
         hits = hits + 1
     else:
         if len(name) == 2:
             if len(name[1]) > 3:
-                print("{0} is not a valid filename in DOS!".format(relativePath));
+                print("{0} is not a valid filename in DOS!".format(os.path.split(todoPaths[0])[1]));
                 hits = hits + 1
     
     firstFilenameChar = os.path.split(todoPaths[0])[1][0]

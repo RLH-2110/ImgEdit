@@ -19,8 +19,10 @@ Make for Windows: https://gnuwin32.sourceforge.net/packages/make.htm
 GCC for Windows: https://www.mingw-w64.org/  
 
 If you compile with the .BAT files, you also have to go to src/comp/fs/ and run one of those .BAT files first, to compile the library used by this project!
-you can find instuctions in the readme there, but the batfile naming convention there is the same as for this project.
-
+you can find instuctions in the readme there, but the batfile naming convention there is the same as for this project.  
+  
+the used library (compFS) can be found here: https://github.com/RLH-2110/compFS and here: https://gitlab.com/OwOUwU621/compfs  
+  
 to see what operating systems where tested what versions where tested, and when, see testing.csv
 
 <table>
@@ -46,13 +48,13 @@ to see what operating systems where tested what versions where tested, and when,
                 <a href="https://github.com/open-watcom/open-watcom-v2">Open Watcom</a><br />
             </td>
             <td>make<br /><b>OR</b><br />COMPNT</td>
-            <td>make test<br /><b>OR</b><br />NTTEST</td>
+            <td>make test<br /><b>OR</b><br />TESTNT</td>
         </tr>
         <tr>
             <td>DOS</td>
             <td><a href="https://github.com/open-watcom/open-watcom-v2">Open Watcom</a></td>
             <td>COMPDOS</td>
-            <td>COMPTEST</td>
+            <td>TESTDOS</td>
         </tr>
         <tr>
             <td>Haiku</td>

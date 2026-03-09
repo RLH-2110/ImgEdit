@@ -13,5 +13,5 @@ src.txt
 obj
 *.a
 *.lib
-
+*.img
 

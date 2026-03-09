@@ -44,8 +44,8 @@ C = Custom Selection (If compiled with certain functions turned off, For example
 /*|Notes|*/
 /* \###/ */
 
-#define CALLER_FREES /* The caller frees that poinnter*/
-#define FUNCTION_FREES /* the callee frees that pointer*/
+#define CALLER_FREES 	/* The caller frees that pointer or closes that file */
+#define FUNCTION_FREES 	/* the callee frees that pointer or closes that file */
 
 
 /* /##\ */
@@ -69,8 +69,6 @@ typedef short bool;
 #define always_true true
 #endif
 
-#define FS_CURR -1
-
 /*/#####\*/
 /*|sizes|*/
 /*\#####/*/
@@ -93,35 +91,11 @@ typedef short bool;
 /* /#########\ */
 /*|ERROR TYPES|*/
 /* \#########/ */
-typedef enum {
-	fseNoError, fseNoOpen, fseNoClose,	fseWrongWrite, fseWrongRead,
-	fseIsDirectory,	 fseIsFile, fseNoRead, fseNoWrite, fseMemory, fseLogic,
-	fseNoCreate, fseNoDelete, fseBufferSize, fseNULLParam, fseSeekError, 
-	fseInternalFSError, fseFileAlreadyExists
-} fsError; 
 
 
 /* /###\ */
 /*|Enums|*/
 /* \###/ */
-
-/* for metadata about files*/
-typedef enum {	
-	fsfInvalid		= 0x00, 
-	fsfReadAccess 	= 0x01,
-	fsfWriteAccess 	= 0x02,
-	fsfIsDirectory	= 0x04,
-	fsfNoFile		= 0x80
-} fsFlags; 
-
-/* for fopen file flags (like rb+)*/
-typedef enum {
-	fsOpenFlagsError			= 0x00,
-	fsOpenFlagsReading			= 0x01,
-	fsOpenFlagsWriting			= 0x02,
-	fsOpenFlagsDontCreate		= 0x04,
-	fsOpenFlagsNoOverWriting	= 0x08
-} fsOpenFlags;
 
 
 #endif

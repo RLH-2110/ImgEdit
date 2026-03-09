@@ -18,6 +18,11 @@ Some operating systems like DOS or early windows versions have scripts that requ
 Make for Windows: https://gnuwin32.sourceforge.net/packages/make.htm  
 GCC for Windows: https://www.mingw-w64.org/  
 
+If you compile with the .BAT files, you also have to go to src/comp/fs/ and run one of those .BAT files first, to compile the library used by this project!
+you can find instuctions in the readme there, but the batfile naming convention there is the same as for this project.
+
+to see what operating systems where tested what versions where tested, and when, see testing.csv
+
 <table>
     <thead>
         <tr>
@@ -25,7 +30,6 @@ GCC for Windows: https://www.mingw-w64.org/
             <th>Requirements</th>
             <th>Command</th>
             <th>Testing Command</th>
-            <th>Versions Tested</th>
         </tr>
     </thead>
     <tbody>
@@ -34,7 +38,6 @@ GCC for Windows: https://www.mingw-w64.org/
             <td>GCC, Make</td>
             <td>make</td>
             <td>make test</td>
-            <td>Ubuntu 22.04.4 LTS</td>
         </tr>
         <tr>
             <td>Windows<br /></td>
@@ -44,24 +47,18 @@ GCC for Windows: https://www.mingw-w64.org/
             </td>
             <td>make<br /><b>OR</b><br />COMPNT</td>
             <td>make test<br /><b>OR</b><br />NTTEST</td>
-            <td>
-                Windows 10 22h2,<br />
-                Windows NT 4.0 Workstation
-            </td>
         </tr>
         <tr>
             <td>DOS</td>
             <td><a href="https://github.com/open-watcom/open-watcom-v2">Open Watcom</a></td>
             <td>COMPDOS</td>
             <td>COMPTEST</td>
-            <td>6.22</td>
         </tr>
         <tr>
             <td>Haiku</td>
             <td>GCC, Make</td>
             <td>make</td>
             <td>make test</td>
-            <td>R1/Beta4(hrev56578+59)</td>
         </tr>
     </tbody>
 </table>

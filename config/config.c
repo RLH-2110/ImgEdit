@@ -1,7 +1,7 @@
 #include "config.h"
-#include "defines.h"
-#include "compat.h"
-#include "stdlib.h"
+#include "../src/defines.h"
+#include "../src/compat.h"
+#include <stdlib.h>
 
 void print_config(void){
 

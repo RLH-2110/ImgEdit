@@ -3,7 +3,7 @@
 
 #include "../defines.h"
 #include "../setup.h"
-#include "../config.h"
+#include "../../config/config.h"
 
 #include "flags.h"
 

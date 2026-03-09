@@ -7,7 +7,7 @@
 
 #include "argParse/args.h"
 #include "compat.h"
-#include "comp/fs/fs.h"
+#include "comp/fs/src/fs.h"
 #include "str.h"
 
 #include "setup.h"

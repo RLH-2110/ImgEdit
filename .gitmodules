@@ -1,0 +1,3 @@
+[submodule "src/comp/fs"]
+	path = src/comp/fs
+	url = https://gitlab.com/OwOUwU621/compfs.git

@@ -1,1 +1,1 @@
-wcl -DOS_DOS *.c argParse/*.c comp/fs/*.c -0 -fe=imgEdit.exe > out.txt
+wcl -DOS_DOS src/comp/fs/libcmpfs.lib src/*.c src/argParse/*.c config/*.c -0 -fe=imgEdit.exe > out.txt

@@ -20,6 +20,7 @@ int main(int argc, char* argv[]){
 	FILE* outf;
 
 	setup();
+	compFS_setup();
 
 	get_args(argc, argv);
 
@@ -76,6 +77,7 @@ int main(int argc, char* argv[]){
 
 
 	close_log_file();
+	compFS_close_log_file();
 	return 0;
 }
 

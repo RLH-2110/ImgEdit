@@ -31,6 +31,25 @@ bool set_log_file(void){
 
 }
 
+/* Closes the log file, if it exists. */
+fsError close_log_file(void){
+	
+	if (logOut != stdout){
+
+		fputs("closing log file...",logOut);
+
+		errno = 0;
+		if (fclose(logOut) != 0){
+			fprintf(logOut,"close_log_file error! errno: %d\nLOG FILE COULD NOT BE CLOSED!\n",errno);
+			return fseNoClose;
+		}
+
+		logOut = stdout;
+	}
+
+	return fseNoError;
+}
+
 
 void error_exit(int status){
 
@@ -41,5 +60,6 @@ void error_exit(int status){
 	#endif
 
 	close_log_file();
+	compFS_close_log_file();
 	exit(status);
 }

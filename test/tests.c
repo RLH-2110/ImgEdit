@@ -50,6 +50,7 @@ FILE* file;
 void oom(){
 	puts("\nTESTER IS OUT OF MEMORY!");
 	close_log_file();
+	compFS_close_log_file();
 	exit(1);
 }
 
@@ -57,12 +58,14 @@ void critical_test_fail(){
 	failed++;
 	printf("\nTest Failed!\nCritial Test failed! We cant test anything else with this failure!\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
 	close_log_file();
+	compFS_close_log_file();
 	exit(1);
 }
 
 void critical_fail(){
 	printf("Critical failure!\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n", passed, NUM_TESTS, failed, NUM_TESTS, skipped, NUM_TESTS);
 	close_log_file();
+	compFS_close_log_file();
 	exit(1);
 }
 
@@ -311,7 +314,8 @@ int main(int argc, char* argv[]){
 
 	puts("\nInitializing..."); /* print new line, so we have a bit of distance to the `make` output */
 	setup();
-
+	compFS_setup();
+	
 	failed = 0;
 	passed = 0;
 	skipped = 0;
@@ -340,6 +344,7 @@ int main(int argc, char* argv[]){
 
 	printf("\n#------------------#\nPassed: %d/%d\nFailed: %d/%d\nSkipped: %d/%d\n",passed,NUM_TESTS,failed,NUM_TESTS,skipped,NUM_TESTS);
 	close_log_file();
+	compFS_close_log_file();
 	return 0;
 }
 

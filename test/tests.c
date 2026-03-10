@@ -285,6 +285,7 @@ void test2(){ /* own functions used: get_args*/
 			printf("\nexpected: %s\tgot: %s\n",sExpected,sInputA);
 		}
 		
+		free(sInputA); sInputA = NULL;
 		free(argv); argv = NULL;
 		rewind(scrOut); /* go to start of file again, so new stuff overwrites the old one */
 	}

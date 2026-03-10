@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "comp/fs/src/fs.h"
 #include "argParse/flags.h"
+#include <errno.h>
 
 FILE *logOut;
 FILE *scrOut; 
